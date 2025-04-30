@@ -1,0 +1,9 @@
+streamlit==1.32.0
+pandas==2.2.1
+plotly==5.19.0
+numpy==1.26.4
+pillow==10.2.0  # For image processing
+requests==2.31.0  # For external resources
+python-dateutil==2.8.2  # For date handling
+streamlit-option-menu==0.3.12  # For enhanced navigation
+streamlit-extras==0.4.0  # For additional UI components 
