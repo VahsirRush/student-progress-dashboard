@@ -1924,9 +1924,9 @@ if df is not None:
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     if st.button("View Dashboard", key=f"list_dashboard_btn_{student['student_id']}"):
-                    st.session_state['selected_student'] = student['student_id']
-                    st.session_state['active_tab'] = "Student Dashboard"
-                    st.experimental_rerun()
+                        st.session_state['selected_student'] = student['student_id']
+                        st.session_state['active_tab'] = "Student Dashboard"
+                        st.experimental_rerun()
                 with col2:
                     summary = get_student_summary(df, student['student_id'])
                     report_data = [{
@@ -1968,9 +1968,9 @@ if df is not None:
                         # Overall Progress
                         st.subheader("Overall Progress")
                         col1, col2, col3, col4 = st.columns(4)
-                with col1:
+                        with col1:
                             st.metric("Total Questions", summary['total_questions'])
-                with col2:
+                        with col2:
                             st.metric("Skills Practiced", summary['total_skills_practiced'])
                         with col3:
                             st.metric("Skills Mastered", summary['total_skills_mastered'])
@@ -2070,9 +2070,9 @@ if df is not None:
                         
                         with metric_tabs[1]:
                             # IXL Progress Over Time
-                col1, col2 = st.columns(2)
+                            col1, col2 = st.columns(2)
                             
-                with col1:
+                            with col1:
                                 # Math Progress Chart
                                 fig_math = go.Figure()
                                 try:
@@ -2139,7 +2139,7 @@ if df is not None:
                                 except Exception as e:
                                     st.error(f"Error creating Math progress chart: {str(e)}")
                             
-                with col2:
+                            with col2:
                                 # ELA Progress Chart
                                 fig_ela = go.Figure()
                                 try:
