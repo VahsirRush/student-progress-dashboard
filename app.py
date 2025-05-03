@@ -102,18 +102,7 @@ st.markdown("""
     }
     
     .stSelectbox > div > div {
-        background: white;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-sm);
-        color: white;
-    }
-    
-    .stSelectbox > div > div > div {
-        color: white;
-    }
-    
-    .stSelectbox > div > div > div > div {
-        color: white;
+        color: var(--text-primary);
     }
     
     .stTextInput > div > div > input {
@@ -148,13 +137,13 @@ st.markdown("""
         border-bottom: 1px solid #000000;
         transition: all 0.3s ease;
     }
-    
+
     .student-box:hover {
         transform: none;
         box-shadow: none;
         background-color: rgba(0, 0, 0, 0.02);
     }
-    
+
     .student-box.selected {
         border-left: none;
         background: none;
@@ -385,20 +374,6 @@ st.markdown("""
         background: white;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
-    }
-    
-    .stSelectbox > div > div > div {
-        color: var(--text-primary);
-    }
-    
-    .stSelectbox > div > div > div > div {
-        background-color: var(--primary);
-        color: white;
-    }
-    
-    .stSelectbox > div > div > div > div:hover {
-        background-color: var(--primary-dark);
-        color: white;
     }
     
     /* Search Input */
@@ -668,30 +643,17 @@ st.markdown("""
         padding: 0.5rem;
     }
 
-    /* Selectbox */
-    .stSelectbox > div > div {
-        background: white;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-sm);
+    /* Student Selection Dropdown */
+    .stSelectbox > div > div > div[data-baseweb="select"] {
+        color: white;
     }
 
-    /* Dropdown menu */
-    .stSelectbox > div > div > div > div > div > div {
-        color: white !important;
-        background-color: var(--primary) !important;
+    .stSelectbox > div > div > div[data-baseweb="select"]:hover {
+        color: white;
     }
 
-    .stSelectbox > div > div > div > div > div > div:hover {
-        background-color: var(--primary-dark) !important;
-    }
-
-    /* Reset other selectbox text to black */
-    .stSelectbox > div > div > div {
-        color: var(--text-primary) !important;
-    }
-
-    .stSelectbox > div > div > div > div {
-        color: var(--text-primary) !important;
+    .stSelectbox > div > div > div[data-baseweb="select"] > div {
+        color: white;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -1700,10 +1662,10 @@ if df is not None:
         st.session_state['selected_students'] = set()
     if 'selected_student' not in st.session_state:
         st.session_state['selected_student'] = None
-
+    
     # Create tabs
     tab1, tab2, tab3, tab4 = st.tabs(["Student Dashboard", "Student List", "Comparison View", "Raw Data"])
-
+    
     # Student Dashboard Tab
     with tab1:
         st.title("Student Progress Dashboard")
@@ -1962,9 +1924,9 @@ if df is not None:
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     if st.button("View Dashboard", key=f"list_dashboard_btn_{student['student_id']}"):
-                        st.session_state['selected_student'] = student['student_id']
-                        st.session_state['active_tab'] = "Student Dashboard"
-                        st.experimental_rerun()
+                    st.session_state['selected_student'] = student['student_id']
+                    st.session_state['active_tab'] = "Student Dashboard"
+                    st.experimental_rerun()
                 with col2:
                     summary = get_student_summary(df, student['student_id'])
                     report_data = [{
@@ -2006,9 +1968,9 @@ if df is not None:
                         # Overall Progress
                         st.subheader("Overall Progress")
                         col1, col2, col3, col4 = st.columns(4)
-                        with col1:
+                with col1:
                             st.metric("Total Questions", summary['total_questions'])
-                        with col2:
+                with col2:
                             st.metric("Skills Practiced", summary['total_skills_practiced'])
                         with col3:
                             st.metric("Skills Mastered", summary['total_skills_mastered'])
@@ -2108,9 +2070,9 @@ if df is not None:
                         
                         with metric_tabs[1]:
                             # IXL Progress Over Time
-                            col1, col2 = st.columns(2)
+                col1, col2 = st.columns(2)
                             
-                            with col1:
+                with col1:
                                 # Math Progress Chart
                                 fig_math = go.Figure()
                                 try:
@@ -2177,7 +2139,7 @@ if df is not None:
                                 except Exception as e:
                                     st.error(f"Error creating Math progress chart: {str(e)}")
                             
-                            with col2:
+                with col2:
                                 # ELA Progress Chart
                                 fig_ela = go.Figure()
                                 try:
