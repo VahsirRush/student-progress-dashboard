@@ -667,6 +667,32 @@ st.markdown("""
         margin: 0;
         padding: 0.5rem;
     }
+
+    /* Selectbox */
+    .stSelectbox > div > div {
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* Dropdown menu */
+    .stSelectbox > div > div > div > div > div > div {
+        color: white !important;
+        background-color: var(--primary) !important;
+    }
+
+    .stSelectbox > div > div > div > div > div > div:hover {
+        background-color: var(--primary-dark) !important;
+    }
+
+    /* Reset other selectbox text to black */
+    .stSelectbox > div > div > div {
+        color: var(--text-primary) !important;
+    }
+
+    .stSelectbox > div > div > div > div {
+        color: var(--text-primary) !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
