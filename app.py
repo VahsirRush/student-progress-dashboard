@@ -110,6 +110,7 @@ st.markdown("""
         border: 1px solid rgba(0,0,0,0.1);
         padding: var(--spacing-sm) var(--spacing-md);
         background-color: white;
+        color: black;
     }
     
     /* Chart specific overrides */
@@ -381,12 +382,14 @@ st.markdown("""
         border: 1px solid rgba(0,0,0,0.1);
         padding: var(--spacing-sm) var(--spacing-md);
         background-color: white;
+        color: black;
     }
     
     .stTextInput > div > div > input:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 2px rgba(33,150,243,0.1);
         background-color: white;
+        color: black;
     }
 
     /* Comparison View Styles */
@@ -1133,10 +1136,18 @@ def display_student_dashboard(student_id, date_filter=None):
         hovermode='x unified',
         showlegend=True,
         legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor='rgba(255, 255, 255, 0.8)',
+            bordercolor='rgba(0, 0, 0, 0.1)',
+            borderwidth=1,
+            font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            )
         ),
         plot_bgcolor='white',
         paper_bgcolor='white',
