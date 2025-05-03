@@ -976,6 +976,54 @@ def display_ixl_progress(student_id, df):
             except Exception as e:
                 st.error(f"Error creating ELA progress chart: {str(e)}")
     
+    with tab2:
+        # Term selection
+        selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+        term_data = student_data[student_data['Term'] == selected_term]
+        
+        if term_data.empty:
+            st.warning(f"No data available for {selected_term} term.")
+            st.stop()
+        
+        # Get the most recent diagnostic for this term
+        latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
+        
+        # Calculate percentiles
+        math_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+            latest_data['Starting diagnostic level - Math']
+        )
+        
+        math_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+            latest_data['Ending diagnostic level - Math']
+        )
+        
+        ela_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+            latest_data['Starting diagnostic level - ELA']
+        )
+        
+        ela_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+            latest_data['Ending diagnostic level - ELA']
+        )
+        
+        # Create two columns for the donut charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if math_start_pct is not None and math_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+        
+        with col2:
+            if ela_start_pct is not None and ela_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+    
     # Display additional metrics
     st.markdown("### IXL Metrics")
     col1, col2, col3 = st.columns(3)
@@ -1063,7 +1111,18 @@ def display_student_dashboard(student_id, date_filter=None):
         ))
     
     fig.update_layout(
-        title='Progress Over Time',
+        title={
+            'text': 'Progress Over Time',
+            'x': 0.5,
+            'xanchor': 'center',
+            'y': 0.95,
+            'yanchor': 'top',
+            'font': dict(
+                color='black',
+                size=18,
+                family='Arial'
+            )
+        },
         xaxis_title='Date',
         yaxis_title='Skills Mastered',
         hovermode='x unified',
@@ -1074,8 +1133,37 @@ def display_student_dashboard(student_id, date_filter=None):
             xanchor="left",
             x=0.01
         ),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(
+            color='black',
+            size=12,
+            family='Arial'
+        ),
+        xaxis=dict(
+            title_font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            ),
+            tickfont=dict(
+                color='black',
+                size=10,
+                family='Arial'
+            )
+        ),
+        yaxis=dict(
+            title_font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            ),
+            tickfont=dict(
+                color='black',
+                size=10,
+                family='Arial'
+            )
+        )
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -1094,6 +1182,70 @@ def display_student_dashboard(student_id, date_filter=None):
         avg_growth = round(sum(data['predicted_growth'] for data in summary['subject_breakdown'].values()) / len(summary['subject_breakdown']))
         st.metric("Predicted Growth", f"+{avg_growth}%", 
                  delta=f"+{avg_growth - 50}%" if avg_growth > 50 else None)
+    
+    # Subject Comparison Chart
+    st.subheader("Subject Comparison")
+    subjects = list(summary['subject_breakdown'].keys())
+    progress_values = [data['progress'] for data in summary['subject_breakdown'].values()]
+    mastery_rates = [data['mastery_rate'] for data in summary['subject_breakdown'].values()]
+    efficiency_scores = [data['efficiency'] for data in summary['subject_breakdown'].values()]
+    
+    fig = go.Figure(data=[
+        go.Bar(name='Progress', x=subjects, y=progress_values, marker_color='#7ba7c2'),
+        go.Bar(name='Mastery Rate', x=subjects, y=mastery_rates, marker_color='#5d8aa8'),
+        go.Bar(name='Efficiency', x=subjects, y=efficiency_scores, marker_color='#d1b280')
+    ])
+    
+    fig.update_layout(
+        barmode='group',
+        title={
+            'text': 'Subject Performance Comparison',
+            'x': 0.5,
+            'xanchor': 'center',
+            'y': 0.95,
+            'yanchor': 'top',
+            'font': dict(
+                color='black',
+                size=18,
+                family='Arial'
+            )
+        },
+        xaxis_title='Subject',
+        yaxis_title='Percentage',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(
+            color='black',
+            size=12,
+            family='Arial'
+        ),
+        xaxis=dict(
+            title_font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            ),
+            tickfont=dict(
+                color='black',
+                size=10,
+                family='Arial'
+            )
+        ),
+        yaxis=dict(
+            title_font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            ),
+            tickfont=dict(
+                color='black',
+                size=10,
+                family='Arial'
+            )
+        )
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
     
     # Subject Breakdown
     st.subheader("Subject Breakdown")
@@ -1914,13 +2066,15 @@ if df is not None:
                                         fig_math.update_layout(
                                             title={
                                                 'text': 'Math Diagnostic Level Over Time',
+                                                'x': 0.5,
+                                                'xanchor': 'center',
+                                                'y': 0.95,
+                                                'yanchor': 'top',
                                                 'font': dict(
                                                     color='black',
                                                     size=18,
                                                     family='Arial'
-                                                ),
-                                                'x': 0.5,
-                                                'y': 0.95
+                                                )
                                             },
                                             xaxis_title='Date',
                                             yaxis_title='Diagnostic Level',
@@ -1979,13 +2133,15 @@ if df is not None:
                                         fig_ela.update_layout(
                                             title={
                                                 'text': 'ELA Diagnostic Level Over Time',
+                                                'x': 0.5,
+                                                'xanchor': 'center',
+                                                'y': 0.95,
+                                                'yanchor': 'top',
                                                 'font': dict(
                                                     color='black',
                                                     size=18,
                                                     family='Arial'
-                                                ),
-                                                'x': 0.5,
-                                                'y': 0.95
+                                                )
                                             },
                                             xaxis_title='Date',
                                             yaxis_title='Diagnostic Level',
