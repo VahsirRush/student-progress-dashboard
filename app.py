@@ -45,6 +45,11 @@ st.markdown("""
         --font-size-lg: 1.125rem;
         --font-size-xl: 1.25rem;
         
+        /* Text Colors */
+        --text-primary: #000000;
+        --text-secondary: #333333;
+        --text-muted: #666666;
+        
         /* Spacing */
         --spacing-xs: 0.25rem;
         --spacing-sm: 0.5rem;
@@ -72,6 +77,49 @@ st.markdown("""
     * {
         font-family: var(--font-family);
         transition: all var(--transition-normal);
+        color: var(--text-primary);
+    }
+    
+    /* Streamlit specific overrides */
+    .stApp {
+        background-color: white;
+    }
+    
+    .stMarkdown {
+        color: var(--text-primary);
+    }
+    
+    .stMetric {
+        color: var(--text-primary);
+    }
+    
+    .stMetric > div > div {
+        color: var(--text-primary);
+    }
+    
+    .stMetric > div > div > div {
+        color: var(--text-primary);
+    }
+    
+    .stSelectbox > div > div {
+        color: var(--text-primary);
+    }
+    
+    .stTextInput > div > div > input {
+        color: var(--text-primary);
+    }
+    
+    /* Chart specific overrides */
+    .js-plotly-plot .plotly .modebar {
+        background-color: white;
+    }
+    
+    .js-plotly-plot .plotly .modebar-btn {
+        color: var(--text-primary);
+    }
+    
+    .js-plotly-plot .plotly .modebar-btn:hover {
+        background-color: rgba(0,0,0,0.1);
     }
     
     /* Card Styles */
@@ -699,7 +747,13 @@ def draw_donut_chart(subject, start_val, end_val, term):
         insidetextorientation='horizontal',
         sort=False,
         direction='clockwise',
-        rotation=180
+        rotation=180,
+        textfont=dict(
+            color='black',
+            size=14,
+            family='Arial'
+        ),
+        textposition='inside'
     ))
     
     fig.update_layout(
@@ -707,11 +761,22 @@ def draw_donut_chart(subject, start_val, end_val, term):
             'text': f"<b>{subject} Percentile ({term})</b><br><span style='font-size:12px'>Start vs. End</span>",
             'x': 0.5,
             'xanchor': 'center',
-            'font': dict(color='black', size=20)
+            'font': dict(
+                color='black',
+                size=20,
+                family='Arial'
+            ),
+            'y': 0.95
         },
         showlegend=False,
         paper_bgcolor='white',
-        plot_bgcolor='white'
+        plot_bgcolor='white',
+        font=dict(
+            color='black',
+            size=12,
+            family='Arial'
+        ),
+        margin=dict(t=50, b=20, l=20, r=20)
     )
     
     return fig
@@ -760,14 +825,54 @@ def display_ixl_progress(student_id, df):
                 x=student_data['Date'].dt.strftime('%Y-%m-%d'),
                 y=student_data['Ending diagnostic level - Math'],
                 name='Math Level',
-                marker_color='#2196F3'
+                marker_color='#2196F3',
+                text=student_data['Ending diagnostic level - Math'],
+                textposition='outside',
+                textfont=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
             ))
             fig_math.update_layout(
-                title='Math Diagnostic Level Over Time',
+                title={
+                    'text': 'Math Diagnostic Level Over Time',
+                    'font': dict(
+                        color='black',
+                        size=18,
+                        family='Arial'
+                    ),
+                    'x': 0.5,
+                    'y': 0.95
+                },
                 xaxis_title='Date',
                 yaxis_title='Diagnostic Level',
                 template='plotly_white',
-                height=400
+                height=400,
+                font=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                xaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    ),
+                    tickangle=45
+                ),
+                yaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    )
+                ),
+                margin=dict(t=50, b=50, l=50, r=50),
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             st.plotly_chart(fig_math, use_container_width=True)
         
@@ -778,14 +883,54 @@ def display_ixl_progress(student_id, df):
                 x=student_data['Date'].dt.strftime('%Y-%m-%d'),
                 y=student_data['Ending diagnostic level - ELA'],
                 name='ELA Level',
-                marker_color='#FFC107'
+                marker_color='#FFC107',
+                text=student_data['Ending diagnostic level - ELA'],
+                textposition='outside',
+                textfont=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
             ))
             fig_ela.update_layout(
-                title='ELA Diagnostic Level Over Time',
+                title={
+                    'text': 'ELA Diagnostic Level Over Time',
+                    'font': dict(
+                        color='black',
+                        size=18,
+                        family='Arial'
+                    ),
+                    'x': 0.5,
+                    'y': 0.95
+                },
                 xaxis_title='Date',
                 yaxis_title='Diagnostic Level',
                 template='plotly_white',
-                height=400
+                height=400,
+                font=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                xaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    ),
+                    tickangle=45
+                ),
+                yaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    )
+                ),
+                margin=dict(t=50, b=50, l=50, r=50),
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             st.plotly_chart(fig_ela, use_container_width=True)
     
@@ -796,7 +941,7 @@ def display_ixl_progress(student_id, df):
         
         if term_data.empty:
             st.warning(f"No data available for {selected_term} term.")
-            return
+            st.stop()
         
         # Get the most recent diagnostic for this term
         latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
@@ -972,7 +1117,7 @@ def display_student_dashboard(student_id, date_filter=None):
     st.subheader("Metric Breakdown")
     
     # Create tabs for different metric visualizations
-    metric_tabs = st.tabs(["Skills Progress", "Efficiency Analysis", "Activity Patterns"])
+    metric_tabs = st.tabs(["Skills Progress", "IXL Progress", "IXL Term Performance"])
     
     with metric_tabs[0]:
         # Skills Progress Chart
@@ -986,76 +1131,221 @@ def display_student_dashboard(student_id, date_filter=None):
                 y=[subject_data['skills_practiced'], subject_data['skills_mastered']],
                 text=[subject_data['skills_practiced'], subject_data['skills_mastered']],
                 textposition='auto',
+                textfont=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                )
             ))
         
         fig.update_layout(
-            title='Skills Progress by Subject',
+            title={
+                'text': 'Skills Progress by Subject',
+                'font': dict(
+                    color='black',
+                    size=18,
+                    family='Arial'
+                ),
+                'x': 0.5,
+                'y': 0.95
+            },
             barmode='group',
             xaxis_title='Metric',
             yaxis_title='Count',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            font=dict(
+                color='black',
+                size=12,
+                family='Arial'
+            ),
+            xaxis=dict(
+                tickfont=dict(
+                    color='black',
+                    size=10,
+                    family='Arial'
+                )
+            ),
+            yaxis=dict(
+                tickfont=dict(
+                    color='black',
+                    size=10,
+                    family='Arial'
+                )
+            ),
+            margin=dict(t=50, b=50, l=50, r=50)
         )
         
         st.plotly_chart(fig, use_container_width=True)
     
     with metric_tabs[1]:
-        # Efficiency Analysis Chart
-        fig = go.Figure()
+        # IXL Progress Over Time
+        col1, col2 = st.columns(2)
         
-        for subject in subjects:
-            subject_data = summary['subject_breakdown'][subject]
-            fig.add_trace(go.Scatter(
-                name=subject,
-                x=[subject_data['questions_per_day']],
-                y=[subject_data['efficiency']],
-                mode='markers+text',
-                marker=dict(size=15),
-                text=[f"{subject_data['efficiency']}%"],
-                textposition='top center'
+        with col1:
+            # Math Progress Chart
+            fig_math = go.Figure()
+            fig_math.add_trace(go.Bar(
+                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                y=student_data['Ending diagnostic level - Math'],
+                name='Math Level',
+                marker_color='#2196F3',
+                text=student_data['Ending diagnostic level - Math'],
+                textposition='outside',
+                textfont=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
             ))
+            fig_math.update_layout(
+                title={
+                    'text': 'Math Diagnostic Level Over Time',
+                    'font': dict(
+                        color='black',
+                        size=18,
+                        family='Arial'
+                    ),
+                    'x': 0.5,
+                    'y': 0.95
+                },
+                xaxis_title='Date',
+                yaxis_title='Diagnostic Level',
+                template='plotly_white',
+                height=400,
+                font=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                xaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    ),
+                    tickangle=45
+                ),
+                yaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    )
+                ),
+                margin=dict(t=50, b=50, l=50, r=50),
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            st.plotly_chart(fig_math, use_container_width=True)
         
-        fig.update_layout(
-            title='Efficiency vs Questions per Day',
-            xaxis_title='Questions per Day',
-            yaxis_title='Efficiency (%)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        with col2:
+            # ELA Progress Chart
+            fig_ela = go.Figure()
+            fig_ela.add_trace(go.Bar(
+                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                y=student_data['Ending diagnostic level - ELA'],
+                name='ELA Level',
+                marker_color='#FFC107',
+                text=student_data['Ending diagnostic level - ELA'],
+                textposition='outside',
+                textfont=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+            ))
+            fig_ela.update_layout(
+                title={
+                    'text': 'ELA Diagnostic Level Over Time',
+                    'font': dict(
+                        color='black',
+                        size=18,
+                        family='Arial'
+                    ),
+                    'x': 0.5,
+                    'y': 0.95
+                },
+                xaxis_title='Date',
+                yaxis_title='Diagnostic Level',
+                template='plotly_white',
+                height=400,
+                font=dict(
+                    color='black',
+                    size=12,
+                    family='Arial'
+                ),
+                xaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    ),
+                    tickangle=45
+                ),
+                yaxis=dict(
+                    tickfont=dict(
+                        color='black',
+                        size=10,
+                        family='Arial'
+                    )
+                ),
+                margin=dict(t=50, b=50, l=50, r=50),
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            st.plotly_chart(fig_ela, use_container_width=True)
     
     with metric_tabs[2]:
-        # Activity Patterns Chart
-        fig = go.Figure()
+        # IXL Term Performance
+        # Term selection
+        selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+        term_data = student_data[student_data['Term'] == selected_term]
         
-        for i, subject in enumerate(subjects):
-            subject_data = summary['subject_breakdown'][subject]
-            fig.add_trace(go.Indicator(
-                mode="gauge+number",
-                value=subject_data['questions_per_day'],
-                title={'text': f"{subject}<br>Questions/Day"},
-                gauge={'axis': {'range': [0, 50]},
-                      'bar': {'color': "darkblue"},
-                      'steps': [
-                          {'range': [0, 10], 'color': "lightgray"},
-                          {'range': [10, 20], 'color': "gray"},
-                          {'range': [20, 50], 'color': "darkgray"}
-                      ]},
-                domain={'row': i, 'column': 0}
-            ))
+        if term_data.empty:
+            st.warning(f"No data available for {selected_term} term.")
+            st.stop()
         
-        fig.update_layout(
-            title='Daily Activity Levels',
-            grid={'rows': len(subjects), 'columns': 1, 'pattern': "independent"},
-            height=300 * len(subjects),  # Increased height per gauge
-            width=400,  # Fixed width for better readability
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(t=50, b=50, l=50, r=50)  # Added margins
+        # Get the most recent diagnostic for this term
+        latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
+        
+        # Calculate percentiles
+        math_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+            latest_data['Starting diagnostic level - Math']
         )
         
-        st.plotly_chart(fig, use_container_width=False)  # Changed to False to maintain aspect ratio
+        math_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+            latest_data['Ending diagnostic level - Math']
+        )
+        
+        ela_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+            latest_data['Starting diagnostic level - ELA']
+        )
+        
+        ela_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+            latest_data['Ending diagnostic level - ELA']
+        )
+        
+        # Create two columns for the donut charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if math_start_pct is not None and math_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+        
+        with col2:
+            if ela_start_pct is not None and ela_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
     
     # Subject Breakdown
     st.subheader("Subject Breakdown")
@@ -1762,7 +2052,7 @@ if df is not None:
                         st.subheader("Metric Breakdown")
                         
                         # Create tabs for different metric visualizations
-                        metric_tabs = st.tabs(["Skills Progress", "Efficiency Analysis", "Activity Patterns"])
+                        metric_tabs = st.tabs(["Skills Progress", "IXL Progress", "IXL Term Performance"])
                         
                         with metric_tabs[0]:
                             # Skills Progress Chart
@@ -1776,76 +2066,221 @@ if df is not None:
                                     y=[subject_data['skills_practiced'], subject_data['skills_mastered']],
                                     text=[subject_data['skills_practiced'], subject_data['skills_mastered']],
                                     textposition='auto',
+                                    textfont=dict(
+                                        color='black',
+                                        size=12,
+                                        family='Arial'
+                                    )
                                 ))
                             
                             fig.update_layout(
-                                title='Skills Progress by Subject',
+                                title={
+                                    'text': 'Skills Progress by Subject',
+                                    'font': dict(
+                                        color='black',
+                                        size=18,
+                                        family='Arial'
+                                    ),
+                                    'x': 0.5,
+                                    'y': 0.95
+                                },
                                 barmode='group',
                                 xaxis_title='Metric',
                                 yaxis_title='Count',
-                                plot_bgcolor='rgba(0,0,0,0)',
-                                paper_bgcolor='rgba(0,0,0,0)'
+                                plot_bgcolor='white',
+                                paper_bgcolor='white',
+                                font=dict(
+                                    color='black',
+                                    size=12,
+                                    family='Arial'
+                                ),
+                                xaxis=dict(
+                                    tickfont=dict(
+                                        color='black',
+                                        size=10,
+                                        family='Arial'
+                                    )
+                                ),
+                                yaxis=dict(
+                                    tickfont=dict(
+                                        color='black',
+                                        size=10,
+                                        family='Arial'
+                                    )
+                                ),
+                                margin=dict(t=50, b=50, l=50, r=50)
                             )
                             
                             st.plotly_chart(fig, use_container_width=True)
                         
                         with metric_tabs[1]:
-                            # Efficiency Analysis Chart
-                            fig = go.Figure()
+                            # IXL Progress Over Time
+                            col1, col2 = st.columns(2)
                             
-                            for subject in subjects:
-                                subject_data = summary['subject_breakdown'][subject]
-                                fig.add_trace(go.Scatter(
-                                    name=subject,
-                                    x=[subject_data['questions_per_day']],
-                                    y=[subject_data['efficiency']],
-                                    mode='markers+text',
-                                    marker=dict(size=15),
-                                    text=[f"{subject_data['efficiency']}%"],
-                                    textposition='top center'
+                            with col1:
+                                # Math Progress Chart
+                                fig_math = go.Figure()
+                                fig_math.add_trace(go.Bar(
+                                    x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                                    y=student_data['Ending diagnostic level - Math'],
+                                    name='Math Level',
+                                    marker_color='#2196F3',
+                                    text=student_data['Ending diagnostic level - Math'],
+                                    textposition='outside',
+                                    textfont=dict(
+                                        color='black',
+                                        size=12,
+                                        family='Arial'
+                                    ),
+                                    hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
                                 ))
+                                fig_math.update_layout(
+                                    title={
+                                        'text': 'Math Diagnostic Level Over Time',
+                                        'font': dict(
+                                            color='black',
+                                            size=18,
+                                            family='Arial'
+                                        ),
+                                        'x': 0.5,
+                                        'y': 0.95
+                                    },
+                                    xaxis_title='Date',
+                                    yaxis_title='Diagnostic Level',
+                                    template='plotly_white',
+                                    height=400,
+                                    font=dict(
+                                        color='black',
+                                        size=12,
+                                        family='Arial'
+                                    ),
+                                    xaxis=dict(
+                                        tickfont=dict(
+                                            color='black',
+                                            size=10,
+                                            family='Arial'
+                                        ),
+                                        tickangle=45
+                                    ),
+                                    yaxis=dict(
+                                        tickfont=dict(
+                                            color='black',
+                                            size=10,
+                                            family='Arial'
+                                        )
+                                    ),
+                                    margin=dict(t=50, b=50, l=50, r=50),
+                                    plot_bgcolor='white',
+                                    paper_bgcolor='white'
+                                )
+                                st.plotly_chart(fig_math, use_container_width=True)
                             
-                            fig.update_layout(
-                                title='Efficiency vs Questions per Day',
-                                xaxis_title='Questions per Day',
-                                yaxis_title='Efficiency (%)',
-                                plot_bgcolor='rgba(0,0,0,0)',
-                                paper_bgcolor='rgba(0,0,0,0)'
-                            )
-                            
-                            st.plotly_chart(fig, use_container_width=True)
+                            with col2:
+                                # ELA Progress Chart
+                                fig_ela = go.Figure()
+                                fig_ela.add_trace(go.Bar(
+                                    x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                                    y=student_data['Ending diagnostic level - ELA'],
+                                    name='ELA Level',
+                                    marker_color='#FFC107',
+                                    text=student_data['Ending diagnostic level - ELA'],
+                                    textposition='outside',
+                                    textfont=dict(
+                                        color='black',
+                                        size=12,
+                                        family='Arial'
+                                    ),
+                                    hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                                ))
+                                fig_ela.update_layout(
+                                    title={
+                                        'text': 'ELA Diagnostic Level Over Time',
+                                        'font': dict(
+                                            color='black',
+                                            size=18,
+                                            family='Arial'
+                                        ),
+                                        'x': 0.5,
+                                        'y': 0.95
+                                    },
+                                    xaxis_title='Date',
+                                    yaxis_title='Diagnostic Level',
+                                    template='plotly_white',
+                                    height=400,
+                                    font=dict(
+                                        color='black',
+                                        size=12,
+                                        family='Arial'
+                                    ),
+                                    xaxis=dict(
+                                        tickfont=dict(
+                                            color='black',
+                                            size=10,
+                                            family='Arial'
+                                        ),
+                                        tickangle=45
+                                    ),
+                                    yaxis=dict(
+                                        tickfont=dict(
+                                            color='black',
+                                            size=10,
+                                            family='Arial'
+                                        )
+                                    ),
+                                    margin=dict(t=50, b=50, l=50, r=50),
+                                    plot_bgcolor='white',
+                                    paper_bgcolor='white'
+                                )
+                                st.plotly_chart(fig_ela, use_container_width=True)
                         
                         with metric_tabs[2]:
-                            # Activity Patterns Chart
-                            fig = go.Figure()
+                            # IXL Term Performance
+                            # Term selection
+                            selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+                            term_data = student_data[student_data['Term'] == selected_term]
                             
-                            for i, subject in enumerate(subjects):
-                                subject_data = summary['subject_breakdown'][subject]
-                                fig.add_trace(go.Indicator(
-                                    mode="gauge+number",
-                                    value=subject_data['questions_per_day'],
-                                    title={'text': f"{subject}<br>Questions/Day"},
-                                    gauge={'axis': {'range': [0, 50]},
-                                          'bar': {'color': "darkblue"},
-                                          'steps': [
-                                              {'range': [0, 10], 'color': "lightgray"},
-                                              {'range': [10, 20], 'color': "gray"},
-                                              {'range': [20, 50], 'color': "darkgray"}
-                                          ]},
-                                    domain={'row': i, 'column': 0}
-                                ))
+                            if term_data.empty:
+                                st.warning(f"No data available for {selected_term} term.")
+                                st.stop()
                             
-                            fig.update_layout(
-                                title='Daily Activity Levels',
-                                grid={'rows': len(subjects), 'columns': 1, 'pattern': "independent"},
-                                height=300 * len(subjects),  # Increased height per gauge
-                                width=400,  # Fixed width for better readability
-                                plot_bgcolor='rgba(0,0,0,0)',
-                                paper_bgcolor='rgba(0,0,0,0)',
-                                margin=dict(t=50, b=50, l=50, r=50)  # Added margins
+                            # Get the most recent diagnostic for this term
+                            latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
+                            
+                            # Calculate percentiles
+                            math_start_pct = get_percentile(
+                                df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+                                latest_data['Starting diagnostic level - Math']
                             )
                             
-                            st.plotly_chart(fig, use_container_width=False)  # Changed to False to maintain aspect ratio
+                            math_end_pct = get_percentile(
+                                df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+                                latest_data['Ending diagnostic level - Math']
+                            )
+                            
+                            ela_start_pct = get_percentile(
+                                df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+                                latest_data['Starting diagnostic level - ELA']
+                            )
+                            
+                            ela_end_pct = get_percentile(
+                                df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+                                latest_data['Ending diagnostic level - ELA']
+                            )
+                            
+                            # Create two columns for the donut charts
+                            col1, col2 = st.columns(2)
+                            
+                            with col1:
+                                if math_start_pct is not None and math_end_pct is not None:
+                                    st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+                                else:
+                                    st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+                            
+                            with col2:
+                                if ela_start_pct is not None and ela_end_pct is not None:
+                                    st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+                                else:
+                                    st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
     
     # Raw Data Tab
     with tab4:
