@@ -761,12 +761,13 @@ def draw_donut_chart(subject, start_val, end_val, term):
             'text': f"<b>{subject} Percentile ({term})</b><br><span style='font-size:12px'>Start vs. End</span>",
             'x': 0.5,
             'xanchor': 'center',
+            'y': 0.95,
+            'yanchor': 'top',
             'font': dict(
                 color='black',
                 size=20,
                 family='Arial'
-            ),
-            'y': 0.95
+            )
         },
         showlegend=False,
         paper_bgcolor='white',
@@ -814,16 +815,6 @@ def display_ixl_progress(student_id, df):
     student_data['End date'] = pd.to_datetime(student_data['End date'])
     student_data = student_data.sort_values('End date')
     
-    # Add term information
-    def get_term(date):
-        if pd.isna(date): return None
-        month = date.month
-        if 8 <= month <= 12: return "Fall"
-        elif 1 <= month <= 6: return "Spring"
-        return None
-    
-    student_data['Term'] = student_data['End date'].apply(get_term)
-    
     # Create tabs for different visualizations
     tab1, tab2 = st.tabs(["Progress Over Time", "Term Performance"])
     
@@ -856,13 +847,15 @@ def display_ixl_progress(student_id, df):
                     fig_math.update_layout(
                         title={
                             'text': 'Math Diagnostic Level Over Time',
+                            'x': 0.5,
+                            'xanchor': 'center',
+                            'y': 0.95,
+                            'yanchor': 'top',
                             'font': dict(
                                 color='black',
                                 size=18,
                                 family='Arial'
-                            ),
-                            'x': 0.5,
-                            'y': 0.95
+                            )
                         },
                         xaxis_title='Date',
                         yaxis_title='Diagnostic Level',
@@ -874,6 +867,11 @@ def display_ixl_progress(student_id, df):
                             family='Arial'
                         ),
                         xaxis=dict(
+                            title_font=dict(
+                                color='black',
+                                size=12,
+                                family='Arial'
+                            ),
                             tickfont=dict(
                                 color='black',
                                 size=10,
@@ -882,6 +880,11 @@ def display_ixl_progress(student_id, df):
                             tickangle=45
                         ),
                         yaxis=dict(
+                            title_font=dict(
+                                color='black',
+                                size=12,
+                                family='Arial'
+                            ),
                             tickfont=dict(
                                 color='black',
                                 size=10,
@@ -921,13 +924,15 @@ def display_ixl_progress(student_id, df):
                     fig_ela.update_layout(
                         title={
                             'text': 'ELA Diagnostic Level Over Time',
+                            'x': 0.5,
+                            'xanchor': 'center',
+                            'y': 0.95,
+                            'yanchor': 'top',
                             'font': dict(
                                 color='black',
                                 size=18,
                                 family='Arial'
-                            ),
-                            'x': 0.5,
-                            'y': 0.95
+                            )
                         },
                         xaxis_title='Date',
                         yaxis_title='Diagnostic Level',
@@ -939,6 +944,11 @@ def display_ixl_progress(student_id, df):
                             family='Arial'
                         ),
                         xaxis=dict(
+                            title_font=dict(
+                                color='black',
+                                size=12,
+                                family='Arial'
+                            ),
                             tickfont=dict(
                                 color='black',
                                 size=10,
@@ -947,6 +957,11 @@ def display_ixl_progress(student_id, df):
                             tickangle=45
                         ),
                         yaxis=dict(
+                            title_font=dict(
+                                color='black',
+                                size=12,
+                                family='Arial'
+                            ),
                             tickfont=dict(
                                 color='black',
                                 size=10,
@@ -1116,296 +1131,6 @@ def display_student_dashboard(student_id, date_filter=None):
         st.metric("Predicted Growth", f"+{avg_growth}%", 
                  delta=f"+{avg_growth - 50}%" if avg_growth > 50 else None)
     
-    # Subject Comparison Chart
-    st.subheader("Subject Comparison")
-    subjects = list(summary['subject_breakdown'].keys())
-    progress_values = [data['progress'] for data in summary['subject_breakdown'].values()]
-    mastery_rates = [data['mastery_rate'] for data in summary['subject_breakdown'].values()]
-    efficiency_scores = [data['efficiency'] for data in summary['subject_breakdown'].values()]
-    
-    fig = go.Figure(data=[
-        go.Bar(name='Progress', x=subjects, y=progress_values, marker_color='#7ba7c2'),
-        go.Bar(name='Mastery Rate', x=subjects, y=mastery_rates, marker_color='#5d8aa8'),
-        go.Bar(name='Efficiency', x=subjects, y=efficiency_scores, marker_color='#d1b280')
-    ])
-    
-    fig.update_layout(
-        barmode='group',
-        title='Subject Performance Comparison',
-        xaxis_title='Subject',
-        yaxis_title='Percentage',
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-    
-    # Metric Breakdown Charts
-    st.subheader("Metric Breakdown")
-    
-    # Create tabs for different metric visualizations
-    metric_tabs = st.tabs(["Skills Progress", "IXL Progress", "IXL Term Performance"])
-    
-    with metric_tabs[0]:
-        # Skills Progress Chart
-        fig = go.Figure()
-        
-        for subject in subjects:
-            subject_data = summary['subject_breakdown'][subject]
-            fig.add_trace(go.Bar(
-                name=subject,
-                x=['Skills Practiced', 'Skills Mastered'],
-                y=[subject_data['skills_practiced'], subject_data['skills_mastered']],
-                text=[subject_data['skills_practiced'], subject_data['skills_mastered']],
-                textposition='auto',
-                textfont=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                )
-            ))
-        
-        fig.update_layout(
-            title={
-                'text': 'Skills Progress by Subject',
-                'font': dict(
-                    color='black',
-                    size=18,
-                    family='Arial'
-                ),
-                'x': 0.5,
-                'y': 0.95
-            },
-            barmode='group',
-            xaxis_title='Metric',
-            yaxis_title='Count',
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            font=dict(
-                color='black',
-                size=12,
-                family='Arial'
-            ),
-            xaxis=dict(
-                tickfont=dict(
-                    color='black',
-                    size=10,
-                    family='Arial'
-                )
-            ),
-            yaxis=dict(
-                tickfont=dict(
-                    color='black',
-                    size=10,
-                    family='Arial'
-                )
-            ),
-            margin=dict(t=50, b=50, l=50, r=50)
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with metric_tabs[1]:
-        # IXL Progress Over Time
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Math Progress Chart
-            fig_math = go.Figure()
-            try:
-                # Check if required columns exist
-                if 'End date' not in student_data.columns or 'Ending diagnostic level - Math' not in student_data.columns:
-                    st.warning("Required columns for Math progress visualization are missing.")
-                else:
-                    fig_math.add_trace(go.Bar(
-                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
-                        y=student_data['Ending diagnostic level - Math'],
-                        name='Math Level',
-                        marker_color='#2196F3',
-                        text=student_data['Ending diagnostic level - Math'],
-                        textposition='outside',
-                        textfont=dict(
-                            color='black',
-                            size=12,
-                            family='Arial'
-                        ),
-                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-                    ))
-                    fig_math.update_layout(
-                        title={
-                            'text': 'Math Diagnostic Level Over Time',
-                            'font': dict(
-                                color='black',
-                                size=18,
-                                family='Arial'
-                            ),
-                            'x': 0.5,
-                            'y': 0.95
-                        },
-                        xaxis_title='Date',
-                        yaxis_title='Diagnostic Level',
-                        template='plotly_white',
-                        height=400,
-                        font=dict(
-                            color='black',
-                            size=12,
-                            family='Arial'
-                        ),
-                        xaxis=dict(
-                            tickfont=dict(
-                                color='black',
-                                size=10,
-                                family='Arial'
-                            ),
-                            tickangle=45
-                        ),
-                        yaxis=dict(
-                            tickfont=dict(
-                                color='black',
-                                size=10,
-                                family='Arial'
-                            )
-                        ),
-                        margin=dict(t=50, b=50, l=50, r=50),
-                        plot_bgcolor='white',
-                        paper_bgcolor='white'
-                    )
-                    st.plotly_chart(fig_math, use_container_width=True)
-            except Exception as e:
-                st.error(f"Error creating Math progress chart: {str(e)}")
-        
-        with col2:
-            # ELA Progress Chart
-            fig_ela = go.Figure()
-            try:
-                # Check if required columns exist
-                if 'End date' not in student_data.columns or 'Ending diagnostic level - ELA' not in student_data.columns:
-                    st.warning("Required columns for ELA progress visualization are missing.")
-                else:
-                    fig_ela.add_trace(go.Bar(
-                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
-                        y=student_data['Ending diagnostic level - ELA'],
-                        name='ELA Level',
-                        marker_color='#FFC107',
-                        text=student_data['Ending diagnostic level - ELA'],
-                        textposition='outside',
-                        textfont=dict(
-                            color='black',
-                            size=12,
-                            family='Arial'
-                        ),
-                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-                    ))
-                    fig_ela.update_layout(
-                        title={
-                            'text': 'ELA Diagnostic Level Over Time',
-                            'font': dict(
-                                color='black',
-                                size=18,
-                                family='Arial'
-                            ),
-                            'x': 0.5,
-                            'y': 0.95
-                        },
-                        xaxis_title='Date',
-                        yaxis_title='Diagnostic Level',
-                        template='plotly_white',
-                        height=400,
-                        font=dict(
-                            color='black',
-                            size=12,
-                            family='Arial'
-                        ),
-                        xaxis=dict(
-                            tickfont=dict(
-                                color='black',
-                                size=10,
-                                family='Arial'
-                            ),
-                            tickangle=45
-                        ),
-                        yaxis=dict(
-                            tickfont=dict(
-                                color='black',
-                                size=10,
-                                family='Arial'
-                            )
-                        ),
-                        margin=dict(t=50, b=50, l=50, r=50),
-                        plot_bgcolor='white',
-                        paper_bgcolor='white'
-                    )
-                    st.plotly_chart(fig_ela, use_container_width=True)
-            except Exception as e:
-                st.error(f"Error creating ELA progress chart: {str(e)}")
-    
-    with metric_tabs[2]:
-        # IXL Term Performance
-        try:
-            # Check if required columns exist
-            if 'End date' not in student_data.columns:
-                st.warning("Required date column for term performance visualization is missing.")
-                st.stop()
-            
-            # Add term information
-            def get_term(date):
-                if pd.isna(date): return None
-                month = date.month
-                if 8 <= month <= 12: return "Fall"
-                elif 1 <= month <= 6: return "Spring"
-                return None
-            
-            student_data['Term'] = student_data['End date'].apply(get_term)
-            
-            # Term selection
-            selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
-            term_data = student_data[student_data['Term'] == selected_term]
-            
-            if term_data.empty:
-                st.warning(f"No data available for {selected_term} term.")
-                st.stop()
-            
-            # Get the most recent diagnostic for this term
-            latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
-            
-            # Calculate percentiles
-            math_start_pct = get_percentile(
-                df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
-                latest_data['Starting diagnostic level - Math']
-            )
-            
-            math_end_pct = get_percentile(
-                df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
-                latest_data['Ending diagnostic level - Math']
-            )
-            
-            ela_start_pct = get_percentile(
-                df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
-                latest_data['Starting diagnostic level - ELA']
-            )
-            
-            ela_end_pct = get_percentile(
-                df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
-                latest_data['Ending diagnostic level - ELA']
-            )
-            
-            # Create two columns for the donut charts
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                if math_start_pct is not None and math_end_pct is not None:
-                    st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
-                else:
-                    st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
-            
-            with col2:
-                if ela_start_pct is not None and ela_end_pct is not None:
-                    st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
-                else:
-                    st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
-        except Exception as e:
-            st.error(f"Error creating term performance visualization: {str(e)}")
-    
     # Subject Breakdown
     st.subheader("Subject Breakdown")
     
@@ -1449,10 +1174,25 @@ def display_student_dashboard(student_id, date_filter=None):
                         st.markdown("#### Activity Details")
                         st.write(f"Total Questions: {subject_data['questions_answered']}")
                         st.write(f"Skills Practiced: {subject_data['skills_practiced']}")
-                        if subject_data['starting_level'] is not None:
-                            st.write(f"Starting Level: {subject_data['starting_level']}")
-                            st.write(f"Ending Level: {subject_data['ending_level']}")
-                            st.write(f"Growth: {subject_data['diagnostic_growth']}")
+                        
+                        # Check for diagnostic levels based on subject
+                        if subject == 'Mathematics':
+                            start_col = 'Starting diagnostic level - Math'
+                            end_col = 'Ending diagnostic level - Math'
+                            growth_col = 'Diagnostic growth - Math'
+                        elif subject == 'English Language Arts':
+                            start_col = 'Starting diagnostic level - ELA'
+                            end_col = 'Ending diagnostic level - ELA'
+                            growth_col = 'Diagnostic growth - ELA'
+                        else:
+                            start_col = end_col = growth_col = None
+                        
+                        # Only show diagnostic information if the columns exist
+                        if start_col in subject_data and end_col in subject_data:
+                            st.write(f"Starting Level: {subject_data[start_col]}")
+                            st.write(f"Ending Level: {subject_data[end_col]}")
+                            if growth_col in subject_data:
+                                st.write(f"Growth: {subject_data[growth_col]}")
     else:
         # Create a triangular layout for more than 4 subjects
         st.markdown(
@@ -1498,49 +1238,28 @@ def display_student_dashboard(student_id, date_filter=None):
                     st.markdown("#### Activity Details")
                     st.write(f"Total Questions: {subject_data['questions_answered']}")
                     st.write(f"Skills Practiced: {subject_data['skills_practiced']}")
-                    if subject_data['starting_level'] is not None:
-                        st.write(f"Starting Level: {subject_data['starting_level']}")
-                        st.write(f"Ending Level: {subject_data['ending_level']}")
-                        st.write(f"Growth: {subject_data['diagnostic_growth']}")
+                    
+                    # Check for diagnostic levels based on subject
+                    if subject == 'Mathematics':
+                        start_col = 'Starting diagnostic level - Math'
+                        end_col = 'Ending diagnostic level - Math'
+                        growth_col = 'Diagnostic growth - Math'
+                    elif subject == 'English Language Arts':
+                        start_col = 'Starting diagnostic level - ELA'
+                        end_col = 'Ending diagnostic level - ELA'
+                        growth_col = 'Diagnostic growth - ELA'
+                    else:
+                        start_col = end_col = growth_col = None
+                    
+                    # Only show diagnostic information if the columns exist
+                    if start_col in subject_data and end_col in subject_data:
+                        st.write(f"Starting Level: {subject_data[start_col]}")
+                        st.write(f"Ending Level: {subject_data[end_col]}")
+                        if growth_col in subject_data:
+                            st.write(f"Growth: {subject_data[growth_col]}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Quick actions
-    st.markdown("### Quick Actions")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("View Dashboard", key=f"dashboard_btn_{student_id}"):
-            st.session_state['selected_student'] = student_id
-            st.session_state['active_tab'] = "Student Dashboard"
-            st.experimental_rerun()
-    with col2:
-        # Generate report data
-        summary = get_student_summary(df, student_id)
-        report_data = [{
-            'student_name': summary['name'],
-            'teacher': summary['teacher'],
-            'total_questions': summary['total_questions'],
-            'total_skills_practiced': summary['total_skills_practiced'],
-            'total_skills_mastered': summary['total_skills_mastered'],
-            'latest_date': summary['latest_date'].strftime('%Y-%m-%d') if pd.notnull(summary['latest_date']) else 'Unknown'
-        }]
-        report_df = pd.DataFrame(report_data)
-        csv = report_df.to_csv(index=False)
-        st.download_button(
-            label="Download Report",
-            data=csv,
-            file_name=f"student_report_{student_id}.csv",
-            mime="text/csv",
-            key=f"report_btn_{student_id}"
-        )
-    with col3:
-        if st.button("Compare with Class", key=f"compare_btn_{student_id}"):
-            if 'selected_students' not in st.session_state:
-                st.session_state['selected_students'] = set()
-            st.session_state['selected_students'].add(student_id)
-            st.session_state['active_tab'] = "Comparison View"
-            st.experimental_rerun()
-
     # Add IXL Progress section after other metrics
     display_ixl_progress(student_id, df)
 
@@ -1678,6 +1397,16 @@ def load_data():
             except:
                 end_date = pd.NaT  # Not a Time
                 
+            # Calculate term based on date
+            def get_term(date):
+                if pd.isna(date): return None
+                month = date.month
+                if 8 <= month <= 12: return "Fall"
+                elif 1 <= month <= 6: return "Spring"
+                return None
+            
+            term = get_term(end_date)
+                
             # Process Math records
             if not pd.isna(row['Math questions answered']) and int(row['Math questions answered']) > 0:
                 record = {
@@ -1687,6 +1416,7 @@ def load_data():
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
                     'End date': end_date,
+                    'Term': term,
                     'subject': 'Mathematics',
                     'questions_answered': int(row['Math questions answered']),
                     'skills_practiced': int(row['Math skills practiced']),
@@ -1713,6 +1443,7 @@ def load_data():
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
                     'End date': end_date,
+                    'Term': term,
                     'subject': 'English Language Arts',
                     'questions_answered': int(row['ELA questions answered']),
                     'skills_practiced': int(row['ELA skills practiced']),
@@ -1739,6 +1470,7 @@ def load_data():
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
                     'End date': end_date,
+                    'Term': term,
                     'subject': 'Science',
                     'questions_answered': int(row['Science questions answered']),
                     'skills_practiced': int(row['Science skills practiced']),
@@ -1755,6 +1487,7 @@ def load_data():
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
                     'End date': end_date,
+                    'Term': term,
                     'subject': 'Social Studies',
                     'questions_answered': int(row['Social studies questions answered']),
                     'skills_practiced': int(row['Social studies skills practiced']),
