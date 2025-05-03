@@ -1136,10 +1136,10 @@ def display_student_dashboard(student_id, date_filter=None):
         hovermode='x unified',
         showlegend=True,
         legend=dict(
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
+            yanchor="top",
+            y=-0.15,
+            xanchor="center",
+            x=0.5,
             bgcolor='rgba(255, 255, 255, 0.8)',
             bordercolor='rgba(0, 0, 0, 0.1)',
             borderwidth=1,
@@ -1147,7 +1147,8 @@ def display_student_dashboard(student_id, date_filter=None):
                 color='black',
                 size=12,
                 family='Arial'
-            )
+            ),
+            orientation='h'
         ),
         plot_bgcolor='white',
         paper_bgcolor='white',
@@ -1179,7 +1180,8 @@ def display_student_dashboard(student_id, date_filter=None):
                 size=10,
                 family='Arial'
             )
-        )
+        ),
+        margin=dict(t=50, b=100, l=50, r=50)
     )
     
     st.plotly_chart(fig, use_container_width=True)
