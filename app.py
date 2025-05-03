@@ -801,7 +801,7 @@ def display_ixl_progress(student_id, df):
     # Check if required columns exist
     required_columns = ['End date', 'Starting diagnostic level - Math', 
                        'Ending diagnostic level - Math', 'Starting diagnostic level - ELA', 
-                       'Ending diagnostic level - ELA']
+                       'Ending diagnostic level - ELA', 'questions_answered']
     
     missing_columns = [col for col in required_columns if col not in student_data.columns]
     if missing_columns:
@@ -976,81 +976,45 @@ def display_ixl_progress(student_id, df):
             except Exception as e:
                 st.error(f"Error creating ELA progress chart: {str(e)}")
     
-    with tab2:
-        # Term selection
-        selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
-        term_data = student_data[student_data['Term'] == selected_term]
-        
-        if term_data.empty:
-            st.warning(f"No data available for {selected_term} term.")
-            st.stop()
-        
-        # Get the most recent diagnostic for this term
-        latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
-        
-        # Calculate percentiles
-        math_start_pct = get_percentile(
-            df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
-            latest_data['Starting diagnostic level - Math']
-        )
-        
-        math_end_pct = get_percentile(
-            df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
-            latest_data['Ending diagnostic level - Math']
-        )
-        
-        ela_start_pct = get_percentile(
-            df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
-            latest_data['Starting diagnostic level - ELA']
-        )
-        
-        ela_end_pct = get_percentile(
-            df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
-            latest_data['Ending diagnostic level - ELA']
-        )
-        
-        # Create two columns for the donut charts
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if math_start_pct is not None and math_end_pct is not None:
-                st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
-            else:
-                st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
-        
-        with col2:
-            if ela_start_pct is not None and ela_end_pct is not None:
-                st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
-            else:
-                st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
-    
     # Display additional metrics
     st.markdown("### IXL Metrics")
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.metric(
-            "Total Math Questions",
-            f"{student_data['Math questions answered'].sum():,}",
-            help="Total math questions answered by the student"
-        )
+        try:
+            math_questions = student_data[student_data['subject'] == 'Mathematics']['questions_answered'].sum()
+            st.metric(
+                "Total Math Questions",
+                f"{math_questions:,}",
+                help="Total math questions answered by the student"
+            )
+        except Exception as e:
+            st.warning("Could not calculate total math questions")
     
     with col2:
-        st.metric(
-            "Total ELA Questions",
-            f"{student_data['ELA questions answered'].sum():,}",
-            help="Total ELA questions answered by the student"
-        )
+        try:
+            ela_questions = student_data[student_data['subject'] == 'English Language Arts']['questions_answered'].sum()
+            st.metric(
+                "Total ELA Questions",
+                f"{ela_questions:,}",
+                help="Total ELA questions answered by the student"
+            )
+        except Exception as e:
+            st.warning("Could not calculate total ELA questions")
     
     with col3:
-        latest_math = student_data['Ending diagnostic level - Math'].iloc[-1]
-        previous_math = student_data['Ending diagnostic level - Math'].iloc[-2] if len(student_data) > 1 else latest_math
-        math_change = latest_math - previous_math
-        st.metric(
-            "Math Level Change",
-            f"{math_change:+.1f}",
-            help="Change in math diagnostic level from previous assessment"
-        )
+        try:
+            if 'Ending diagnostic level - Math' in student_data.columns:
+                latest_math = student_data['Ending diagnostic level - Math'].iloc[-1]
+                previous_math = student_data['Ending diagnostic level - Math'].iloc[-2] if len(student_data) > 1 else latest_math
+                math_change = latest_math - previous_math
+                st.metric(
+                    "Math Level Change",
+                    f"{math_change:+.1f}",
+                    help="Change in math diagnostic level from previous assessment"
+                )
+        except Exception as e:
+            st.warning("Could not calculate math level change")
 
 def display_student_dashboard(student_id, date_filter=None):
     student_data = df[df['student_id'] == student_id]
