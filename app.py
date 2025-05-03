@@ -791,15 +791,29 @@ def display_ixl_progress(student_id, df):
     st.markdown("### IXL Progress")
     
     # Filter data for the specific student
-    student_data = df[df['ID'] == student_id].copy()
+    student_data = df[df['student_id'] == student_id].copy()
     
     if student_data.empty:
         st.warning("No IXL data available for this student.")
         return
     
+    # Debug: Show available columns for this student
+    st.write("Available columns for student:", student_data.columns.tolist())
+    
+    # Check if required columns exist
+    required_columns = ['End date', 'Starting diagnostic level - Math', 
+                       'Ending diagnostic level - Math', 'Starting diagnostic level - ELA', 
+                       'Ending diagnostic level - ELA']
+    
+    missing_columns = [col for col in required_columns if col not in student_data.columns]
+    if missing_columns:
+        st.warning(f"Missing required columns: {', '.join(missing_columns)}")
+        st.write("Available data:", student_data.head())
+        return
+    
     # Convert Date column to datetime
-    student_data['Date'] = pd.to_datetime(student_data['Date'])
-    student_data = student_data.sort_values('Date')
+    student_data['End date'] = pd.to_datetime(student_data['End date'])
+    student_data = student_data.sort_values('End date')
     
     # Add term information
     def get_term(date):
@@ -809,7 +823,7 @@ def display_ixl_progress(student_id, df):
         elif 1 <= month <= 6: return "Spring"
         return None
     
-    student_data['Term'] = student_data['Date'].apply(get_term)
+    student_data['Term'] = student_data['End date'].apply(get_term)
     
     # Create tabs for different visualizations
     tab1, tab2 = st.tabs(["Progress Over Time", "Term Performance"])
@@ -958,7 +972,7 @@ def display_ixl_progress(student_id, df):
             st.stop()
         
         # Get the most recent diagnostic for this term
-        latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
+        latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
         
         # Calculate percentiles
         math_start_pct = get_percentile(
@@ -1648,6 +1662,9 @@ def load_data():
     try:
         df = pd.read_csv('data/combined_data.csv')
         
+        # Debug: Show original columns
+        st.write("Original CSV columns:", df.columns.tolist())
+        
         # Create a list to store processed records
         records = []
         
@@ -1664,39 +1681,55 @@ def load_data():
                 
             # Process Math records
             if not pd.isna(row['Math questions answered']) and int(row['Math questions answered']) > 0:
-                records.append({
+                record = {
                     'student_id': student_id,
                     'first_name': row['Student first name'],
                     'last_name': row['Student last name'],
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
+                    'End date': end_date,
                     'subject': 'Mathematics',
                     'questions_answered': int(row['Math questions answered']),
                     'skills_practiced': int(row['Math skills practiced']),
                     'skills_proficient': int(row['Math skills proficient']),
-                    'skills_mastered': int(row['Math skills mastered']),
-                    'starting_level': int(row['Starting diagnostic level - Math']) if not pd.isna(row['Starting diagnostic level - Math']) else None,
-                    'ending_level': int(row['Ending diagnostic level - Math']) if not pd.isna(row['Ending diagnostic level - Math']) else None,
-                    'diagnostic_growth': int(row['Diagnostic growth - Math']) if not pd.isna(row['Diagnostic growth - Math']) else None
-                })
+                    'skills_mastered': int(row['Math skills mastered'])
+                }
+                
+                # Add diagnostic levels if they exist
+                if 'Starting diagnostic level - Math' in row:
+                    record['Starting diagnostic level - Math'] = row['Starting diagnostic level - Math']
+                if 'Ending diagnostic level - Math' in row:
+                    record['Ending diagnostic level - Math'] = row['Ending diagnostic level - Math']
+                if 'Diagnostic growth - Math' in row:
+                    record['Diagnostic growth - Math'] = row['Diagnostic growth - Math']
+                
+                records.append(record)
             
             # Process ELA records
             if not pd.isna(row['ELA questions answered']) and int(row['ELA questions answered']) > 0:
-                records.append({
+                record = {
                     'student_id': student_id,
                     'first_name': row['Student first name'],
                     'last_name': row['Student last name'],
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
+                    'End date': end_date,
                     'subject': 'English Language Arts',
                     'questions_answered': int(row['ELA questions answered']),
                     'skills_practiced': int(row['ELA skills practiced']),
                     'skills_proficient': int(row['ELA skills proficient']),
-                    'skills_mastered': int(row['ELA skills mastered']),
-                    'starting_level': int(row['Starting diagnostic level - Overall ELA']) if not pd.isna(row['Starting diagnostic level - Overall ELA']) else None,
-                    'ending_level': int(row['Ending diagnostic level - Overall ELA']) if not pd.isna(row['Ending diagnostic level - Overall ELA']) else None,
-                    'diagnostic_growth': int(row['Diagnostic growth - ELA']) if not pd.isna(row['Diagnostic growth - ELA']) else None
-                })
+                    'skills_mastered': int(row['ELA skills mastered'])
+                }
+                
+                # Add diagnostic levels if they exist
+                if 'Starting diagnostic level - Overall ELA' in row:
+                    record['Starting diagnostic level - ELA'] = row['Starting diagnostic level - Overall ELA']
+                if 'Ending diagnostic level - Overall ELA' in row:
+                    record['Ending diagnostic level - ELA'] = row['Ending diagnostic level - Overall ELA']
+                if 'Diagnostic growth - ELA' in row:
+                    record['Diagnostic growth - ELA'] = row['Diagnostic growth - ELA']
+                
+                records.append(record)
             
             # Process Science records
             if not pd.isna(row['Science questions answered']) and int(row['Science questions answered']) > 0:
@@ -1706,14 +1739,12 @@ def load_data():
                     'last_name': row['Student last name'],
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
+                    'End date': end_date,
                     'subject': 'Science',
                     'questions_answered': int(row['Science questions answered']),
                     'skills_practiced': int(row['Science skills practiced']),
                     'skills_proficient': int(row['Science skills proficient']),
-                    'skills_mastered': int(row['Science skills mastered']),
-                    'starting_level': None,
-                    'ending_level': None,
-                    'diagnostic_growth': None
+                    'skills_mastered': int(row['Science skills mastered'])
                 })
             
             # Process Social Studies records
@@ -1724,19 +1755,25 @@ def load_data():
                     'last_name': row['Student last name'],
                     'teacher_name': row['Teacher names'],
                     'date': end_date,
+                    'End date': end_date,
                     'subject': 'Social Studies',
                     'questions_answered': int(row['Social studies questions answered']),
                     'skills_practiced': int(row['Social studies skills practiced']),
                     'skills_proficient': int(row['Social studies skills proficient']),
-                    'skills_mastered': int(row['Social studies skills mastered']),
-                    'starting_level': None,
-                    'ending_level': None,
-                    'diagnostic_growth': None
+                    'skills_mastered': int(row['Social studies skills mastered'])
                 })
         
         # Create DataFrame and sort by date
         df = pd.DataFrame(records)
         df = df.sort_values('date', ascending=False)
+        
+        # Debug: Show processed columns and sample data
+        st.write("Processed DataFrame columns:", df.columns.tolist())
+        st.write("Sample data with diagnostic levels:", 
+                 df[['student_id', 'End date', 'Starting diagnostic level - Math', 
+                     'Ending diagnostic level - Math', 'Starting diagnostic level - ELA', 
+                     'Ending diagnostic level - ELA']].head())
+        
         return df
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
