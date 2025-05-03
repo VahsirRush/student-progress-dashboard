@@ -684,6 +684,187 @@ def get_student_summary(df, student_id, date_filter=None):
         'timeline_data': student_data.sort_values('date')[['date', 'subject', 'questions_answered', 'skills_mastered']].to_dict('records')
     }
 
+def draw_donut_chart(subject, start_val, end_val, term):
+    """Create a donut chart showing start vs end percentiles."""
+    fig = go.Figure()
+    
+    fig.add_trace(go.Pie(
+        values=[start_val, end_val],
+        labels=["Start", "End"],
+        marker=dict(colors=["#FFA15A", "#00CC96"]),
+        hole=0.6,
+        textinfo='label+value',
+        hoverinfo='label+value+percent',
+        texttemplate='%{label}<br>%{value:.0f}',
+        insidetextorientation='horizontal',
+        sort=False,
+        direction='clockwise',
+        rotation=180
+    ))
+    
+    fig.update_layout(
+        title={
+            'text': f"<b>{subject} Percentile ({term})</b><br><span style='font-size:12px'>Start vs. End</span>",
+            'x': 0.5,
+            'xanchor': 'center',
+            'font': dict(color='black', size=20)
+        },
+        showlegend=False,
+        paper_bgcolor='white',
+        plot_bgcolor='white'
+    )
+    
+    return fig
+
+def get_percentile(series, value):
+    """Calculate percentile for a given value in a series."""
+    if pd.isna(value): return None
+    return round(series.rank(pct=True)[series.index[series == value][0]] * 100)
+
+def display_ixl_progress(student_id, df):
+    """Display IXL progress charts for a specific student."""
+    st.markdown("### IXL Progress")
+    
+    # Filter data for the specific student
+    student_data = df[df['ID'] == student_id].copy()
+    
+    if student_data.empty:
+        st.warning("No IXL data available for this student.")
+        return
+    
+    # Convert Date column to datetime
+    student_data['Date'] = pd.to_datetime(student_data['Date'])
+    student_data = student_data.sort_values('Date')
+    
+    # Add term information
+    def get_term(date):
+        if pd.isna(date): return None
+        month = date.month
+        if 8 <= month <= 12: return "Fall"
+        elif 1 <= month <= 6: return "Spring"
+        return None
+    
+    student_data['Term'] = student_data['Date'].apply(get_term)
+    
+    # Create tabs for different visualizations
+    tab1, tab2 = st.tabs(["Progress Over Time", "Term Performance"])
+    
+    with tab1:
+        # Create two columns for the charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Math Progress Chart
+            fig_math = go.Figure()
+            fig_math.add_trace(go.Bar(
+                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                y=student_data['Ending diagnostic level - Math'],
+                name='Math Level',
+                marker_color='#2196F3'
+            ))
+            fig_math.update_layout(
+                title='Math Diagnostic Level Over Time',
+                xaxis_title='Date',
+                yaxis_title='Diagnostic Level',
+                template='plotly_white',
+                height=400
+            )
+            st.plotly_chart(fig_math, use_container_width=True)
+        
+        with col2:
+            # ELA Progress Chart
+            fig_ela = go.Figure()
+            fig_ela.add_trace(go.Bar(
+                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
+                y=student_data['Ending diagnostic level - ELA'],
+                name='ELA Level',
+                marker_color='#FFC107'
+            ))
+            fig_ela.update_layout(
+                title='ELA Diagnostic Level Over Time',
+                xaxis_title='Date',
+                yaxis_title='Diagnostic Level',
+                template='plotly_white',
+                height=400
+            )
+            st.plotly_chart(fig_ela, use_container_width=True)
+    
+    with tab2:
+        # Term selection
+        selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+        term_data = student_data[student_data['Term'] == selected_term]
+        
+        if term_data.empty:
+            st.warning(f"No data available for {selected_term} term.")
+            return
+        
+        # Get the most recent diagnostic for this term
+        latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
+        
+        # Calculate percentiles
+        math_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+            latest_data['Starting diagnostic level - Math']
+        )
+        
+        math_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+            latest_data['Ending diagnostic level - Math']
+        )
+        
+        ela_start_pct = get_percentile(
+            df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+            latest_data['Starting diagnostic level - ELA']
+        )
+        
+        ela_end_pct = get_percentile(
+            df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+            latest_data['Ending diagnostic level - ELA']
+        )
+        
+        # Create two columns for the donut charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if math_start_pct is not None and math_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+        
+        with col2:
+            if ela_start_pct is not None and ela_end_pct is not None:
+                st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+            else:
+                st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+    
+    # Display additional metrics
+    st.markdown("### IXL Metrics")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric(
+            "Total Math Questions",
+            f"{student_data['Math questions answered'].sum():,}",
+            help="Total math questions answered by the student"
+        )
+    
+    with col2:
+        st.metric(
+            "Total ELA Questions",
+            f"{student_data['ELA questions answered'].sum():,}",
+            help="Total ELA questions answered by the student"
+        )
+    
+    with col3:
+        latest_math = student_data['Ending diagnostic level - Math'].iloc[-1]
+        previous_math = student_data['Ending diagnostic level - Math'].iloc[-2] if len(student_data) > 1 else latest_math
+        math_change = latest_math - previous_math
+        st.metric(
+            "Math Level Change",
+            f"{math_change:+.1f}",
+            help="Change in math diagnostic level from previous assessment"
+        )
+
 def display_student_dashboard(student_id, date_filter=None):
     student_data = df[df['student_id'] == student_id]
     
@@ -1010,6 +1191,9 @@ def display_student_dashboard(student_id, date_filter=None):
             st.session_state['selected_students'].add(student_id)
             st.session_state['active_tab'] = "Comparison View"
             st.experimental_rerun()
+
+    # Add IXL Progress section after other metrics
+    display_ixl_progress(student_id, df)
 
 def get_student_status_indicators(student_id, df):
     student_data = df[df['student_id'] == student_id]
