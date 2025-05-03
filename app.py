@@ -821,118 +821,132 @@ def display_ixl_progress(student_id, df):
         with col1:
             # Math Progress Chart
             fig_math = go.Figure()
-            fig_math.add_trace(go.Bar(
-                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                y=student_data['Ending diagnostic level - Math'],
-                name='Math Level',
-                marker_color='#2196F3',
-                text=student_data['Ending diagnostic level - Math'],
-                textposition='outside',
-                textfont=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-            ))
-            fig_math.update_layout(
-                title={
-                    'text': 'Math Diagnostic Level Over Time',
-                    'font': dict(
-                        color='black',
-                        size=18,
-                        family='Arial'
-                    ),
-                    'x': 0.5,
-                    'y': 0.95
-                },
-                xaxis_title='Date',
-                yaxis_title='Diagnostic Level',
-                template='plotly_white',
-                height=400,
-                font=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                xaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
-                    ),
-                    tickangle=45
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
+            try:
+                # Check if required columns exist
+                if 'End date' not in student_data.columns or 'Ending diagnostic level - Math' not in student_data.columns:
+                    st.warning("Required columns for Math progress visualization are missing.")
+                else:
+                    fig_math.add_trace(go.Bar(
+                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                        y=student_data['Ending diagnostic level - Math'],
+                        name='Math Level',
+                        marker_color='#2196F3',
+                        text=student_data['Ending diagnostic level - Math'],
+                        textposition='outside',
+                        textfont=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                    ))
+                    fig_math.update_layout(
+                        title={
+                            'text': 'Math Diagnostic Level Over Time',
+                            'font': dict(
+                                color='black',
+                                size=18,
+                                family='Arial'
+                            ),
+                            'x': 0.5,
+                            'y': 0.95
+                        },
+                        xaxis_title='Date',
+                        yaxis_title='Diagnostic Level',
+                        template='plotly_white',
+                        height=400,
+                        font=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        xaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            ),
+                            tickangle=45
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            )
+                        ),
+                        margin=dict(t=50, b=50, l=50, r=50),
+                        plot_bgcolor='white',
+                        paper_bgcolor='white'
                     )
-                ),
-                margin=dict(t=50, b=50, l=50, r=50),
-                plot_bgcolor='white',
-                paper_bgcolor='white'
-            )
-            st.plotly_chart(fig_math, use_container_width=True)
+                    st.plotly_chart(fig_math, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating Math progress chart: {str(e)}")
         
         with col2:
             # ELA Progress Chart
             fig_ela = go.Figure()
-            fig_ela.add_trace(go.Bar(
-                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                y=student_data['Ending diagnostic level - ELA'],
-                name='ELA Level',
-                marker_color='#FFC107',
-                text=student_data['Ending diagnostic level - ELA'],
-                textposition='outside',
-                textfont=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-            ))
-            fig_ela.update_layout(
-                title={
-                    'text': 'ELA Diagnostic Level Over Time',
-                    'font': dict(
-                        color='black',
-                        size=18,
-                        family='Arial'
-                    ),
-                    'x': 0.5,
-                    'y': 0.95
-                },
-                xaxis_title='Date',
-                yaxis_title='Diagnostic Level',
-                template='plotly_white',
-                height=400,
-                font=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                xaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
-                    ),
-                    tickangle=45
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
+            try:
+                # Check if required columns exist
+                if 'End date' not in student_data.columns or 'Ending diagnostic level - ELA' not in student_data.columns:
+                    st.warning("Required columns for ELA progress visualization are missing.")
+                else:
+                    fig_ela.add_trace(go.Bar(
+                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                        y=student_data['Ending diagnostic level - ELA'],
+                        name='ELA Level',
+                        marker_color='#FFC107',
+                        text=student_data['Ending diagnostic level - ELA'],
+                        textposition='outside',
+                        textfont=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                    ))
+                    fig_ela.update_layout(
+                        title={
+                            'text': 'ELA Diagnostic Level Over Time',
+                            'font': dict(
+                                color='black',
+                                size=18,
+                                family='Arial'
+                            ),
+                            'x': 0.5,
+                            'y': 0.95
+                        },
+                        xaxis_title='Date',
+                        yaxis_title='Diagnostic Level',
+                        template='plotly_white',
+                        height=400,
+                        font=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        xaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            ),
+                            tickangle=45
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            )
+                        ),
+                        margin=dict(t=50, b=50, l=50, r=50),
+                        plot_bgcolor='white',
+                        paper_bgcolor='white'
                     )
-                ),
-                margin=dict(t=50, b=50, l=50, r=50),
-                plot_bgcolor='white',
-                paper_bgcolor='white'
-            )
-            st.plotly_chart(fig_ela, use_container_width=True)
+                    st.plotly_chart(fig_ela, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating ELA progress chart: {str(e)}")
     
     with tab2:
         # Term selection
@@ -1185,167 +1199,199 @@ def display_student_dashboard(student_id, date_filter=None):
         with col1:
             # Math Progress Chart
             fig_math = go.Figure()
-            fig_math.add_trace(go.Bar(
-                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                y=student_data['Ending diagnostic level - Math'],
-                name='Math Level',
-                marker_color='#2196F3',
-                text=student_data['Ending diagnostic level - Math'],
-                textposition='outside',
-                textfont=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-            ))
-            fig_math.update_layout(
-                title={
-                    'text': 'Math Diagnostic Level Over Time',
-                    'font': dict(
-                        color='black',
-                        size=18,
-                        family='Arial'
-                    ),
-                    'x': 0.5,
-                    'y': 0.95
-                },
-                xaxis_title='Date',
-                yaxis_title='Diagnostic Level',
-                template='plotly_white',
-                height=400,
-                font=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                xaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
-                    ),
-                    tickangle=45
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
+            try:
+                # Check if required columns exist
+                if 'End date' not in student_data.columns or 'Ending diagnostic level - Math' not in student_data.columns:
+                    st.warning("Required columns for Math progress visualization are missing.")
+                else:
+                    fig_math.add_trace(go.Bar(
+                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                        y=student_data['Ending diagnostic level - Math'],
+                        name='Math Level',
+                        marker_color='#2196F3',
+                        text=student_data['Ending diagnostic level - Math'],
+                        textposition='outside',
+                        textfont=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                    ))
+                    fig_math.update_layout(
+                        title={
+                            'text': 'Math Diagnostic Level Over Time',
+                            'font': dict(
+                                color='black',
+                                size=18,
+                                family='Arial'
+                            ),
+                            'x': 0.5,
+                            'y': 0.95
+                        },
+                        xaxis_title='Date',
+                        yaxis_title='Diagnostic Level',
+                        template='plotly_white',
+                        height=400,
+                        font=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        xaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            ),
+                            tickangle=45
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            )
+                        ),
+                        margin=dict(t=50, b=50, l=50, r=50),
+                        plot_bgcolor='white',
+                        paper_bgcolor='white'
                     )
-                ),
-                margin=dict(t=50, b=50, l=50, r=50),
-                plot_bgcolor='white',
-                paper_bgcolor='white'
-            )
-            st.plotly_chart(fig_math, use_container_width=True)
+                    st.plotly_chart(fig_math, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating Math progress chart: {str(e)}")
         
         with col2:
             # ELA Progress Chart
             fig_ela = go.Figure()
-            fig_ela.add_trace(go.Bar(
-                x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                y=student_data['Ending diagnostic level - ELA'],
-                name='ELA Level',
-                marker_color='#FFC107',
-                text=student_data['Ending diagnostic level - ELA'],
-                textposition='outside',
-                textfont=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-            ))
-            fig_ela.update_layout(
-                title={
-                    'text': 'ELA Diagnostic Level Over Time',
-                    'font': dict(
-                        color='black',
-                        size=18,
-                        family='Arial'
-                    ),
-                    'x': 0.5,
-                    'y': 0.95
-                },
-                xaxis_title='Date',
-                yaxis_title='Diagnostic Level',
-                template='plotly_white',
-                height=400,
-                font=dict(
-                    color='black',
-                    size=12,
-                    family='Arial'
-                ),
-                xaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
-                    ),
-                    tickangle=45
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        color='black',
-                        size=10,
-                        family='Arial'
+            try:
+                # Check if required columns exist
+                if 'End date' not in student_data.columns or 'Ending diagnostic level - ELA' not in student_data.columns:
+                    st.warning("Required columns for ELA progress visualization are missing.")
+                else:
+                    fig_ela.add_trace(go.Bar(
+                        x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                        y=student_data['Ending diagnostic level - ELA'],
+                        name='ELA Level',
+                        marker_color='#FFC107',
+                        text=student_data['Ending diagnostic level - ELA'],
+                        textposition='outside',
+                        textfont=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                    ))
+                    fig_ela.update_layout(
+                        title={
+                            'text': 'ELA Diagnostic Level Over Time',
+                            'font': dict(
+                                color='black',
+                                size=18,
+                                family='Arial'
+                            ),
+                            'x': 0.5,
+                            'y': 0.95
+                        },
+                        xaxis_title='Date',
+                        yaxis_title='Diagnostic Level',
+                        template='plotly_white',
+                        height=400,
+                        font=dict(
+                            color='black',
+                            size=12,
+                            family='Arial'
+                        ),
+                        xaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            ),
+                            tickangle=45
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                color='black',
+                                size=10,
+                                family='Arial'
+                            )
+                        ),
+                        margin=dict(t=50, b=50, l=50, r=50),
+                        plot_bgcolor='white',
+                        paper_bgcolor='white'
                     )
-                ),
-                margin=dict(t=50, b=50, l=50, r=50),
-                plot_bgcolor='white',
-                paper_bgcolor='white'
-            )
-            st.plotly_chart(fig_ela, use_container_width=True)
+                    st.plotly_chart(fig_ela, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating ELA progress chart: {str(e)}")
     
     with metric_tabs[2]:
         # IXL Term Performance
-        # Term selection
-        selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
-        term_data = student_data[student_data['Term'] == selected_term]
-        
-        if term_data.empty:
-            st.warning(f"No data available for {selected_term} term.")
-            st.stop()
-        
-        # Get the most recent diagnostic for this term
-        latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
-        
-        # Calculate percentiles
-        math_start_pct = get_percentile(
-            df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
-            latest_data['Starting diagnostic level - Math']
-        )
-        
-        math_end_pct = get_percentile(
-            df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
-            latest_data['Ending diagnostic level - Math']
-        )
-        
-        ela_start_pct = get_percentile(
-            df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
-            latest_data['Starting diagnostic level - ELA']
-        )
-        
-        ela_end_pct = get_percentile(
-            df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
-            latest_data['Ending diagnostic level - ELA']
-        )
-        
-        # Create two columns for the donut charts
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if math_start_pct is not None and math_end_pct is not None:
-                st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
-            else:
-                st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
-        
-        with col2:
-            if ela_start_pct is not None and ela_end_pct is not None:
-                st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
-            else:
-                st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+        try:
+            # Check if required columns exist
+            if 'End date' not in student_data.columns:
+                st.warning("Required date column for term performance visualization is missing.")
+                st.stop()
+            
+            # Add term information
+            def get_term(date):
+                if pd.isna(date): return None
+                month = date.month
+                if 8 <= month <= 12: return "Fall"
+                elif 1 <= month <= 6: return "Spring"
+                return None
+            
+            student_data['Term'] = student_data['End date'].apply(get_term)
+            
+            # Term selection
+            selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+            term_data = student_data[student_data['Term'] == selected_term]
+            
+            if term_data.empty:
+                st.warning(f"No data available for {selected_term} term.")
+                st.stop()
+            
+            # Get the most recent diagnostic for this term
+            latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
+            
+            # Calculate percentiles
+            math_start_pct = get_percentile(
+                df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+                latest_data['Starting diagnostic level - Math']
+            )
+            
+            math_end_pct = get_percentile(
+                df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+                latest_data['Ending diagnostic level - Math']
+            )
+            
+            ela_start_pct = get_percentile(
+                df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+                latest_data['Starting diagnostic level - ELA']
+            )
+            
+            ela_end_pct = get_percentile(
+                df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+                latest_data['Ending diagnostic level - ELA']
+            )
+            
+            # Create two columns for the donut charts
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if math_start_pct is not None and math_end_pct is not None:
+                    st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+                else:
+                    st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+            
+            with col2:
+                if ela_start_pct is not None and ela_end_pct is not None:
+                    st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+                else:
+                    st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+        except Exception as e:
+            st.error(f"Error creating term performance visualization: {str(e)}")
     
     # Subject Breakdown
     st.subheader("Subject Breakdown")
@@ -2120,167 +2166,199 @@ if df is not None:
                             with col1:
                                 # Math Progress Chart
                                 fig_math = go.Figure()
-                                fig_math.add_trace(go.Bar(
-                                    x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                                    y=student_data['Ending diagnostic level - Math'],
-                                    name='Math Level',
-                                    marker_color='#2196F3',
-                                    text=student_data['Ending diagnostic level - Math'],
-                                    textposition='outside',
-                                    textfont=dict(
-                                        color='black',
-                                        size=12,
-                                        family='Arial'
-                                    ),
-                                    hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-                                ))
-                                fig_math.update_layout(
-                                    title={
-                                        'text': 'Math Diagnostic Level Over Time',
-                                        'font': dict(
-                                            color='black',
-                                            size=18,
-                                            family='Arial'
-                                        ),
-                                        'x': 0.5,
-                                        'y': 0.95
-                                    },
-                                    xaxis_title='Date',
-                                    yaxis_title='Diagnostic Level',
-                                    template='plotly_white',
-                                    height=400,
-                                    font=dict(
-                                        color='black',
-                                        size=12,
-                                        family='Arial'
-                                    ),
-                                    xaxis=dict(
-                                        tickfont=dict(
-                                            color='black',
-                                            size=10,
-                                            family='Arial'
-                                        ),
-                                        tickangle=45
-                                    ),
-                                    yaxis=dict(
-                                        tickfont=dict(
-                                            color='black',
-                                            size=10,
-                                            family='Arial'
+                                try:
+                                    # Check if required columns exist
+                                    if 'End date' not in student_data.columns or 'Ending diagnostic level - Math' not in student_data.columns:
+                                        st.warning("Required columns for Math progress visualization are missing.")
+                                    else:
+                                        fig_math.add_trace(go.Bar(
+                                            x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                                            y=student_data['Ending diagnostic level - Math'],
+                                            name='Math Level',
+                                            marker_color='#2196F3',
+                                            text=student_data['Ending diagnostic level - Math'],
+                                            textposition='outside',
+                                            textfont=dict(
+                                                color='black',
+                                                size=12,
+                                                family='Arial'
+                                            ),
+                                            hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                                        ))
+                                        fig_math.update_layout(
+                                            title={
+                                                'text': 'Math Diagnostic Level Over Time',
+                                                'font': dict(
+                                                    color='black',
+                                                    size=18,
+                                                    family='Arial'
+                                                ),
+                                                'x': 0.5,
+                                                'y': 0.95
+                                            },
+                                            xaxis_title='Date',
+                                            yaxis_title='Diagnostic Level',
+                                            template='plotly_white',
+                                            height=400,
+                                            font=dict(
+                                                color='black',
+                                                size=12,
+                                                family='Arial'
+                                            ),
+                                            xaxis=dict(
+                                                tickfont=dict(
+                                                    color='black',
+                                                    size=10,
+                                                    family='Arial'
+                                                ),
+                                                tickangle=45
+                                            ),
+                                            yaxis=dict(
+                                                tickfont=dict(
+                                                    color='black',
+                                                    size=10,
+                                                    family='Arial'
+                                                )
+                                            ),
+                                            margin=dict(t=50, b=50, l=50, r=50),
+                                            plot_bgcolor='white',
+                                            paper_bgcolor='white'
                                         )
-                                    ),
-                                    margin=dict(t=50, b=50, l=50, r=50),
-                                    plot_bgcolor='white',
-                                    paper_bgcolor='white'
-                                )
-                                st.plotly_chart(fig_math, use_container_width=True)
+                                        st.plotly_chart(fig_math, use_container_width=True)
+                                except Exception as e:
+                                    st.error(f"Error creating Math progress chart: {str(e)}")
                             
                             with col2:
                                 # ELA Progress Chart
                                 fig_ela = go.Figure()
-                                fig_ela.add_trace(go.Bar(
-                                    x=student_data['Date'].dt.strftime('%Y-%m-%d'),
-                                    y=student_data['Ending diagnostic level - ELA'],
-                                    name='ELA Level',
-                                    marker_color='#FFC107',
-                                    text=student_data['Ending diagnostic level - ELA'],
-                                    textposition='outside',
-                                    textfont=dict(
-                                        color='black',
-                                        size=12,
-                                        family='Arial'
-                                    ),
-                                    hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
-                                ))
-                                fig_ela.update_layout(
-                                    title={
-                                        'text': 'ELA Diagnostic Level Over Time',
-                                        'font': dict(
-                                            color='black',
-                                            size=18,
-                                            family='Arial'
-                                        ),
-                                        'x': 0.5,
-                                        'y': 0.95
-                                    },
-                                    xaxis_title='Date',
-                                    yaxis_title='Diagnostic Level',
-                                    template='plotly_white',
-                                    height=400,
-                                    font=dict(
-                                        color='black',
-                                        size=12,
-                                        family='Arial'
-                                    ),
-                                    xaxis=dict(
-                                        tickfont=dict(
-                                            color='black',
-                                            size=10,
-                                            family='Arial'
-                                        ),
-                                        tickangle=45
-                                    ),
-                                    yaxis=dict(
-                                        tickfont=dict(
-                                            color='black',
-                                            size=10,
-                                            family='Arial'
+                                try:
+                                    # Check if required columns exist
+                                    if 'End date' not in student_data.columns or 'Ending diagnostic level - ELA' not in student_data.columns:
+                                        st.warning("Required columns for ELA progress visualization are missing.")
+                                    else:
+                                        fig_ela.add_trace(go.Bar(
+                                            x=student_data['End date'].dt.strftime('%Y-%m-%d'),
+                                            y=student_data['Ending diagnostic level - ELA'],
+                                            name='ELA Level',
+                                            marker_color='#FFC107',
+                                            text=student_data['Ending diagnostic level - ELA'],
+                                            textposition='outside',
+                                            textfont=dict(
+                                                color='black',
+                                                size=12,
+                                                family='Arial'
+                                            ),
+                                            hovertemplate='Date: %{x}<br>Level: %{y}<extra></extra>'
+                                        ))
+                                        fig_ela.update_layout(
+                                            title={
+                                                'text': 'ELA Diagnostic Level Over Time',
+                                                'font': dict(
+                                                    color='black',
+                                                    size=18,
+                                                    family='Arial'
+                                                ),
+                                                'x': 0.5,
+                                                'y': 0.95
+                                            },
+                                            xaxis_title='Date',
+                                            yaxis_title='Diagnostic Level',
+                                            template='plotly_white',
+                                            height=400,
+                                            font=dict(
+                                                color='black',
+                                                size=12,
+                                                family='Arial'
+                                            ),
+                                            xaxis=dict(
+                                                tickfont=dict(
+                                                    color='black',
+                                                    size=10,
+                                                    family='Arial'
+                                                ),
+                                                tickangle=45
+                                            ),
+                                            yaxis=dict(
+                                                tickfont=dict(
+                                                    color='black',
+                                                    size=10,
+                                                    family='Arial'
+                                                )
+                                            ),
+                                            margin=dict(t=50, b=50, l=50, r=50),
+                                            plot_bgcolor='white',
+                                            paper_bgcolor='white'
                                         )
-                                    ),
-                                    margin=dict(t=50, b=50, l=50, r=50),
-                                    plot_bgcolor='white',
-                                    paper_bgcolor='white'
-                                )
-                                st.plotly_chart(fig_ela, use_container_width=True)
+                                        st.plotly_chart(fig_ela, use_container_width=True)
+                                except Exception as e:
+                                    st.error(f"Error creating ELA progress chart: {str(e)}")
                         
                         with metric_tabs[2]:
                             # IXL Term Performance
-                            # Term selection
-                            selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
-                            term_data = student_data[student_data['Term'] == selected_term]
-                            
-                            if term_data.empty:
-                                st.warning(f"No data available for {selected_term} term.")
-                                st.stop()
-                            
-                            # Get the most recent diagnostic for this term
-                            latest_data = term_data.sort_values(by="Date", ascending=False).iloc[0]
-                            
-                            # Calculate percentiles
-                            math_start_pct = get_percentile(
-                                df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
-                                latest_data['Starting diagnostic level - Math']
-                            )
-                            
-                            math_end_pct = get_percentile(
-                                df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
-                                latest_data['Ending diagnostic level - Math']
-                            )
-                            
-                            ela_start_pct = get_percentile(
-                                df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
-                                latest_data['Starting diagnostic level - ELA']
-                            )
-                            
-                            ela_end_pct = get_percentile(
-                                df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
-                                latest_data['Ending diagnostic level - ELA']
-                            )
-                            
-                            # Create two columns for the donut charts
-                            col1, col2 = st.columns(2)
-                            
-                            with col1:
-                                if math_start_pct is not None and math_end_pct is not None:
-                                    st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
-                                else:
-                                    st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
-                            
-                            with col2:
-                                if ela_start_pct is not None and ela_end_pct is not None:
-                                    st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
-                                else:
-                                    st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+                            try:
+                                # Check if required columns exist
+                                if 'End date' not in student_data.columns:
+                                    st.warning("Required date column for term performance visualization is missing.")
+                                    st.stop()
+                                
+                                # Add term information
+                                def get_term(date):
+                                    if pd.isna(date): return None
+                                    month = date.month
+                                    if 8 <= month <= 12: return "Fall"
+                                    elif 1 <= month <= 6: return "Spring"
+                                    return None
+                                
+                                student_data['Term'] = student_data['End date'].apply(get_term)
+                                
+                                # Term selection
+                                selected_term = st.selectbox("Select Term", ["Fall", "Spring"])
+                                term_data = student_data[student_data['Term'] == selected_term]
+                                
+                                if term_data.empty:
+                                    st.warning(f"No data available for {selected_term} term.")
+                                    st.stop()
+                                
+                                # Get the most recent diagnostic for this term
+                                latest_data = term_data.sort_values(by="End date", ascending=False).iloc[0]
+                                
+                                # Calculate percentiles
+                                math_start_pct = get_percentile(
+                                    df[df['Term'] == selected_term]['Starting diagnostic level - Math'],
+                                    latest_data['Starting diagnostic level - Math']
+                                )
+                                
+                                math_end_pct = get_percentile(
+                                    df[df['Term'] == selected_term]['Ending diagnostic level - Math'],
+                                    latest_data['Ending diagnostic level - Math']
+                                )
+                                
+                                ela_start_pct = get_percentile(
+                                    df[df['Term'] == selected_term]['Starting diagnostic level - ELA'],
+                                    latest_data['Starting diagnostic level - ELA']
+                                )
+                                
+                                ela_end_pct = get_percentile(
+                                    df[df['Term'] == selected_term]['Ending diagnostic level - ELA'],
+                                    latest_data['Ending diagnostic level - ELA']
+                                )
+                                
+                                # Create two columns for the donut charts
+                                col1, col2 = st.columns(2)
+                                
+                                with col1:
+                                    if math_start_pct is not None and math_end_pct is not None:
+                                        st.plotly_chart(draw_donut_chart("Math", math_start_pct, math_end_pct, selected_term), use_container_width=True)
+                                    else:
+                                        st.info("Student Has Not Completed Enough Math Training-Sets To Receive a Score")
+                                
+                                with col2:
+                                    if ela_start_pct is not None and ela_end_pct is not None:
+                                        st.plotly_chart(draw_donut_chart("ELA", ela_start_pct, ela_end_pct, selected_term), use_container_width=True)
+                                    else:
+                                        st.info("Student Has Not Completed Enough ELA Training-Sets To Receive a Score")
+                            except Exception as e:
+                                st.error(f"Error creating term performance visualization: {str(e)}")
     
     # Raw Data Tab
     with tab4:
