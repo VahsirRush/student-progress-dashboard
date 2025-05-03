@@ -102,7 +102,18 @@ st.markdown("""
     }
     
     .stSelectbox > div > div {
-        color: var(--text-primary);
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        color: white;
+    }
+    
+    .stSelectbox > div > div > div {
+        color: white;
+    }
+    
+    .stSelectbox > div > div > div > div {
+        color: white;
     }
     
     .stTextInput > div > div > input {
@@ -374,6 +385,15 @@ st.markdown("""
         background: white;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
+        color: white;
+    }
+    
+    .stSelectbox > div > div > div {
+        color: white;
+    }
+    
+    .stSelectbox > div > div > div > div {
+        color: white;
     }
     
     /* Search Input */
