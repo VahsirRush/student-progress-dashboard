@@ -797,9 +797,6 @@ def display_ixl_progress(student_id, df):
         st.warning("No IXL data available for this student.")
         return
     
-    # Debug: Show available columns for this student
-    st.write("Available columns for student:", student_data.columns.tolist())
-    
     # Check if required columns exist
     required_columns = ['End date', 'Starting diagnostic level - Math', 
                        'Ending diagnostic level - Math', 'Starting diagnostic level - ELA', 
@@ -808,7 +805,9 @@ def display_ixl_progress(student_id, df):
     missing_columns = [col for col in required_columns if col not in student_data.columns]
     if missing_columns:
         st.warning(f"Missing required columns: {', '.join(missing_columns)}")
-        st.write("Available data:", student_data.head())
+        with st.expander("Debug Information", expanded=False):
+            st.write("Available columns:", student_data.columns.tolist())
+            st.write("Sample data:", student_data.head())
         return
     
     # Convert Date column to datetime
@@ -1656,14 +1655,14 @@ def get_student_alerts(status):
     
     return alerts
 
+# Add debug mode toggle at the top of the app
+debug_mode = st.sidebar.checkbox("Debug Mode", value=False)
+
 # Load and process data
 @st.cache_data
 def load_data():
     try:
         df = pd.read_csv('data/combined_data.csv')
-        
-        # Debug: Show original columns
-        st.write("Original CSV columns:", df.columns.tolist())
         
         # Create a list to store processed records
         records = []
@@ -1766,13 +1765,6 @@ def load_data():
         # Create DataFrame and sort by date
         df = pd.DataFrame(records)
         df = df.sort_values('date', ascending=False)
-        
-        # Debug: Show processed columns and sample data
-        st.write("Processed DataFrame columns:", df.columns.tolist())
-        st.write("Sample data with diagnostic levels:", 
-                 df[['student_id', 'End date', 'Starting diagnostic level - Math', 
-                     'Ending diagnostic level - Math', 'Starting diagnostic level - ELA', 
-                     'Ending diagnostic level - ELA']].head())
         
         return df
     except Exception as e:
