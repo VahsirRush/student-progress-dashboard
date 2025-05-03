@@ -385,14 +385,19 @@ st.markdown("""
         background: white;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
-        color: white;
     }
     
     .stSelectbox > div > div > div {
-        color: white;
+        color: var(--text-primary);
     }
     
     .stSelectbox > div > div > div > div {
+        background-color: var(--primary);
+        color: white;
+    }
+    
+    .stSelectbox > div > div > div > div:hover {
+        background-color: var(--primary-dark);
         color: white;
     }
     
