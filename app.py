@@ -106,7 +106,10 @@ st.markdown("""
     }
     
     .stTextInput > div > div > input {
-        color: var(--text-primary);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(0,0,0,0.1);
+        padding: var(--spacing-sm) var(--spacing-md);
+        background-color: white;
     }
     
     /* Chart specific overrides */
@@ -377,11 +380,13 @@ st.markdown("""
         border-radius: var(--radius-md);
         border: 1px solid rgba(0,0,0,0.1);
         padding: var(--spacing-sm) var(--spacing-md);
+        background-color: white;
     }
     
     .stTextInput > div > div > input:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 2px rgba(33,150,243,0.1);
+        background-color: white;
     }
 
     /* Comparison View Styles */
