@@ -643,19 +643,18 @@ st.markdown("""
         padding: 0.5rem;
     }
 
-    /* Student Selection Dropdown - FIXED */
-div[data-baseweb="menu"] {
-    background-color: white !important;
-    color: black !important;
-}
+    /* Student Selection Dropdown */
+    .stSelectbox > div > div > div[data-baseweb="select"] {
+        color: white;
+    }
 
-div[data-baseweb="option"] {
-    color: black !important;
-}
+    .stSelectbox > div > div > div[data-baseweb="select"]:hover {
+        color: white;
+    }
 
-div[data-baseweb="select"] > div {
-    color: black !important;
-}
+    .stSelectbox > div > div > div[data-baseweb="select"] > div {
+        color: white;
+    }
 
     </style>
 """, unsafe_allow_html=True)
