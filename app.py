@@ -8,11 +8,21 @@ import os
 
 # Version check
 VERSION = "1.0.1"
+
+# Initialize Streamlit configuration
 st.set_page_config(
     page_title="Student Progress Dashboard",
     page_icon="📚",
     layout="wide"
 )
+
+# Initialize session state
+if 'active_tab' not in st.session_state:
+    st.session_state['active_tab'] = "Student Dashboard"
+if 'selected_students' not in st.session_state:
+    st.session_state['selected_students'] = set()
+if 'selected_student' not in st.session_state:
+    st.session_state['selected_student'] = None
 
 # Display version in sidebar
 with st.sidebar:
