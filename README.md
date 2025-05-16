@@ -1,40 +1,37 @@
 # Student Progress Dashboard
 
-A Streamlit application for visualizing and tracking student progress across different subjects.
+A Streamlit application for tracking and visualizing student progress.
 
 ## Features
 
-- View student progress metrics
-- Filter by student, subject, and date
-- Track skills practiced and mastered
-- Visualize progress over time
-- View diagnostic growth (where available)
+- Password-protected access
+- Student progress tracking
+- Interactive visualizations
+- Data import/export capabilities
+- Smart data processing
 
-## Setup
+## Deployment Instructions
 
-1. Create a virtual environment (recommended):
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+1. Fork this repository
+2. Sign up for [Streamlit Cloud](https://streamlit.io/cloud)
+3. Connect your GitHub repository
+4. Deploy the app
 
+## Local Development
+
+1. Clone the repository
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the app:
+   ```bash
+   streamlit run app.py
+   ```
 
-3. Place your data file:
-- Put your `combined_data.csv` file in the `data` directory
-- The CSV should contain columns for student information and subject-specific metrics
+## Security Note
 
-## Running the App
-
-Run the following command from the `streamlit_app` directory:
-```bash
-streamlit run app.py
-```
-
-The app will be available at `http://localhost:8501` by default.
+The app uses local file-based authentication. For production deployment, consider implementing a more robust authentication system.
 
 ## Data Format
 

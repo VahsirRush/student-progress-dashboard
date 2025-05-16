@@ -5,6 +5,9 @@ import plotly.graph_objects as go
 from datetime import datetime
 import numpy as np
 import os
+import hashlib
+import json
+from pathlib import Path
 
 # Version check
 VERSION = "1.0.1"
@@ -16,6 +19,100 @@ st.set_page_config(
     layout="wide"
 )
 
+# Password protection
+def make_hashes(password):
+    return hashlib.sha256(str.encode(password)).hexdigest()
+
+def check_hashes(password, hashed_text):
+    if make_hashes(password) == hashed_text:
+        return True
+    return False
+
+def load_users():
+    """Load users from a JSON file."""
+    users_file = Path("users.json")
+    if users_file.exists():
+        with open(users_file, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    """Save users to a JSON file."""
+    with open("users.json", "w") as f:
+        json.dump(users, f)
+
+def login_user(username, password):
+    """Authenticate a user."""
+    users = load_users()
+    if username in users:
+        if check_hashes(password, users[username]):
+            return True
+    return False
+
+def register_user(username, password):
+    """Register a new user."""
+    users = load_users()
+    if username in users:
+        return False
+    users[username] = make_hashes(password)
+    save_users(users)
+    return True
+
+# Initialize session state for authentication
+if 'authenticated' not in st.session_state:
+    st.session_state['authenticated'] = False
+if 'username' not in st.session_state:
+    st.session_state['username'] = None
+
+# Login/Register UI
+if not st.session_state['authenticated']:
+    st.title("Student Progress Dashboard Login")
+    
+    # Create tabs for login and register
+    login_tab, register_tab = st.tabs(["Login", "Register"])
+    
+    with login_tab:
+        st.subheader("Login")
+        username = st.text_input("Username", key="login_username")
+        password = st.text_input("Password", type="password", key="login_password")
+        
+        if st.button("Login"):
+            if login_user(username, password):
+                st.session_state['authenticated'] = True
+                st.session_state['username'] = username
+                st.success("Login successful!")
+                st.experimental_rerun()
+            else:
+                st.error("Invalid username or password")
+    
+    with register_tab:
+        st.subheader("Register")
+        new_username = st.text_input("Username", key="register_username")
+        new_password = st.text_input("Password", type="password", key="register_password")
+        confirm_password = st.text_input("Confirm Password", type="password", key="confirm_password")
+        
+        if st.button("Register"):
+            if new_password != confirm_password:
+                st.error("Passwords do not match")
+            elif len(new_password) < 6:
+                st.error("Password must be at least 6 characters long")
+            elif register_user(new_username, new_password):
+                st.success("Registration successful! Please login.")
+            else:
+                st.error("Username already exists")
+    
+    st.stop()
+
+# Add logout button in sidebar
+with st.sidebar:
+    st.markdown(f"**Version:** {VERSION}")
+    st.markdown("---")
+    st.markdown(f"**Logged in as:** {st.session_state['username']}")
+    if st.button("Logout"):
+        st.session_state['authenticated'] = False
+        st.session_state['username'] = None
+        st.experimental_rerun()
+
 # Initialize session state
 if 'active_tab' not in st.session_state:
     st.session_state['active_tab'] = "Student Dashboard"
@@ -23,11 +120,6 @@ if 'selected_students' not in st.session_state:
     st.session_state['selected_students'] = set()
 if 'selected_student' not in st.session_state:
     st.session_state['selected_student'] = None
-
-# Display version in sidebar
-with st.sidebar:
-    st.markdown(f"**Version:** {VERSION}")
-    st.markdown("---")
 
 # Custom CSS
 st.markdown("""
@@ -2287,12 +2379,73 @@ if df is not None:
     # Raw Data Tab
     with tab4:
         st.title("Raw Data")
+        
+        # Add file uploader
+        uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="data_upload")
+        
+        if uploaded_file is not None:
+            # Process the uploaded file
+            df_processed, issues = process_uploaded_csv(uploaded_file)
+            
+            if df_processed is not None:
+                # Display success message
+                st.success("File processed successfully!")
+                
+                # Display processed data
+                st.subheader("Processed Data")
+                st.dataframe(df_processed)
+                
+                # Add download button for processed data
+                csv = df_processed.to_csv(index=False)
+                st.download_button(
+                    label="Download Processed Data",
+                    data=csv,
+                    file_name="processed_student_data.csv",
+                    mime="text/csv"
+                )
+                
+                # Update the main dataframe with the processed data
+                df = df_processed
+            else:
+                # Display issues
+                st.error("Issues found in the uploaded file:")
+                for issue in issues:
+                    st.error(issue)
+                
+                st.info("Please make sure your CSV file has the following columns:")
+                st.markdown("""
+                Required columns:
+                - Student ID
+                - Student first name
+                - Student last name
+                - Teacher names
+                - End date
+                - Math questions answered
+                - Math skills practiced
+                - Math skills proficient
+                - Math skills mastered
+                - ELA questions answered
+                - ELA skills practiced
+                - ELA skills proficient
+                - ELA skills mastered
+                - Science questions answered
+                - Science skills practiced
+                - Science skills proficient
+                - Science skills mastered
+                - Social studies questions answered
+                - Social studies skills practiced
+                - Social studies skills proficient
+                - Social studies skills mastered
+                """)
+        
+        # Display original data
+        st.subheader("Original Data")
         st.dataframe(df)
         
-        # Download button for raw data
+        # Download button for original data
         csv = df.to_csv(index=False)
         st.download_button(
-            label="Download Raw Data",
+            label="Download Original Data",
             data=csv,
             file_name="student_data.csv",
             mime="text/csv"
